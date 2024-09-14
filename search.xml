@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<search>
+  <entry>
+    <title>Hello World</title>
+    <url>/2024/09/13/hello-world/</url>
+    <content><![CDATA[<p>Welcome to <a href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
+<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>More info: <a href="https://hexo.io/docs/writing.html">Writing</a></p>
+<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
+
+<p>More info: <a href="https://hexo.io/docs/server.html">Server</a></p>
+<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
+
+<p>More info: <a href="https://hexo.io/docs/generating.html">Generating</a></p>
+<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
+
+<p>More info: <a href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
+]]></content>
+  </entry>
+  <entry>
+    <title>Java IO入门</title>
+    <url>/2024/08/24/Java%20IO%E5%85%A5%E9%97%A8%20day1/</url>
+    <content><![CDATA[<h1 id="Java-IO入门"><a href="#Java-IO入门" class="headerlink" title="Java IO入门"></a>Java IO入门</h1><h2 id="Linux网络IO模型简介-UNIX网络模型"><a href="#Linux网络IO模型简介-UNIX网络模型" class="headerlink" title="Linux网络IO模型简介 UNIX网络模型"></a>Linux网络IO模型简介 UNIX网络模型</h2><p>我们要知道，应用程序所有的操作都是通过进行系统调用来进行的，要想了解Java I&#x2F;O的处理，就要先了解一下系统对于I&#x2F;O是怎么定义的。I&#x2F;O我们都知道是输入和输出，那么系统到底是怎么操作的呢。</p>
+<p>此处引用《Netty权威指南》的话：</p>
+<blockquote>
+<p>Linux的内核将所有的外部设备都看作一个文件来操作，对一个文件的读写操作会调用内核提供的系统命令，返回一个file descriptor（fd，文件描述符）。而对一个socket的读写也会有相应的描述符，称为socketfd，描述符就是一个数字，它指向内核中的一个结构体（文件路径，数据区等一些属性）</p>
+</blockquote>
+<p>所以Linux是将所有的I&#x2F;O操作都看作是操作一个文件，从文件中读出，向文件中写入。</p>
+<span id="more"></span>
+
+<p>那么具体会怎么操作，UNIX网络编程给出了对于I&#x2F;O模型的分类，UNIX提供了5中I&#x2F;O模型，分别是：</p>
+<ul>
+<li><strong>阻塞I&#x2F;O模型</strong>：最常用的I&#x2F;O模型就是阻塞I&#x2F;O模型。拿文件操作举个例子，当使用阻塞I&#x2F;O模型时，线程会在开始系统调用后一直等待，等待数据包到达且被复制到应用进程的缓冲区中或者发生错误时才返回，在此期间会一直阻塞进程等待。</li>
+<li><strong>非阻塞I&#x2F;O模型</strong>：recfrom从应用层到内核的时候，如果该缓冲区没有数据的话，就直接返回一个错误，一般都对非阻塞I&#x2F;O模型进行轮询检查这个状态，看内核是不是有数据到来。</li>
+<li><strong>I&#x2F;O复用模型</strong>：Linux提供select&#x2F;poll，进程通过将一个或多个fd传递给select或poll系统调用，阻塞在select操作上，这样select&#x2F;poll可以帮我们侦测多个fd是否处于就绪状态，select&#x2F;poll是顺序扫描fd是否就绪，而且支持的fd数量有限，因此它的使用受到了一些限制，linux还提供了一个epoll系统调用，epoll使用基于事件驱动方式代替顺序扫描，因此性能更高，当有fd就绪时，立即回调rollback。</li>
+<li><strong>信号驱动I&#x2F;O模型</strong>：首先开启套接口信号驱动I&#x2F;O功能，并通过系统调用sigaction执行一个信号处理函数（此系统调用立即返回，进程继续工作，它是非阻塞的）。当数据准备就绪时，就为该进程生成一个SIGIO信号，通过信号回调通知应用程序调用recvfrom来读取数据，并通知主循环函数处理数据。</li>
+<li><strong>异步I&#x2F;O</strong>：告知内核启动某个操作，并让内核在整个操作完成之后（包括将数据从内核复制到用户自己的缓冲区）通知我们。这种模型与信号驱动模型的主要区别是：信号驱动模型由内核通知我们何时开始一个I&#x2F;O操作，异步模型是由内核通知我们I&#x2F;O操作何时已经完成。</li>
+</ul>
+<p>事实上我们这里需要了解的有几点：</p>
+<ul>
+<li>阻塞与非阻塞的区别是：阻塞I&#x2F;O会在没有结果（得到数据包或者发生错误）的时候一直等待，而非阻塞I&#x2F;O会直接返回（无论有没有数据，有的话执行复制（此处与阻塞式过程相同），没有的话直接返回错误）。</li>
+<li>I&#x2F;O复用模型可以达到使用一个线程检测多个fd，也就是同时侦测多个接口是否就绪，是否有需要处理的。</li>
+<li>信号驱动I&#x2F;O是由系统来打出信号通知进程该进行某些操作。</li>
+<li>异步I&#x2F;O是在I&#x2F;O操作的时候不由当前进程侦察，而是直接交给内核，由内核进行I&#x2F;O操作，操作完后返回操作结果，产生结果后再交给当前进程处理。</li>
+</ul>
+<p>此处再引用美团技术团队的文章来帮助我们理解什么是阻塞：</p>
+<blockquote>
+<p>所有的系统I&#x2F;O都分为两个阶段：等待就绪和操作。举例来说，读函数，分为等待系统可读和真正的读；同理，写函数分为等待网卡可以写和真正的写。</p>
+<p>需要说明的是等待就绪的阻塞是不使用CPU的，是在“空等”；而真正的读写操作的阻塞是使用CPU的，真正在”干活”，而且这个过程非常快，属于memory copy，带宽通常在1GB&#x2F;s级别以上，可以理解为基本不耗时。</p>
+</blockquote>
+<p>以及I&#x2F;O模型对比：</p>
+<p><img src="https://raw.githubusercontent.com/baiyina/baiyina.github.image/main/img/202408242303927.png" alt="image-20240824230357336"></p>
+<h2 id="常用-Java-I-O-编程"><a href="#常用-Java-I-O-编程" class="headerlink" title="常用 Java I&#x2F;O 编程"></a>常用 Java I&#x2F;O 编程</h2><p>如果你试图了解果Java的I&#x2F;O操作，那么你应该会见过这几个名字：BIO、NIO、AIO。</p>
+<p>这些都是什么？</p>
+<h3 id="BIO"><a href="#BIO" class="headerlink" title="BIO"></a>BIO</h3><p>BIO编程，网络编程的基本模型是cs client&#x2F;server模型，也就是两个进程之间相互通信，其中服务端提供位置信息（IP和端口），客户端通过连接操作向服务端监听的地址发起连接请求，然后通过三次握手建立连接，建立连接成功后双方就可以通过网络套接字（socket）进行通信了。</p>
+<p>事实上BIO的操作是，服务端有client连接的情况下直接为每个客户端创建一个线程来处理，那么如果在高并发的情况下，往往会有成千上万个client来连接server进行请求，这就意味着每个连接都会占用一部分系统资源（CPU时间片、内存）。系统的资源是有限的，并且不是每个线程都有数据，这就意味着大量的阻塞线程一直占用系统资源，大量的上下文切换会极大增加CPU开销。最后甚至会导致系统崩溃。</p>
+<p><strong>BIO，每个操作一个线程，并且在没有数据的时候会一直阻塞。</strong></p>
+<p>那么有没有方法能解决这种创建大量线程的问题呢，这个时候大家都会想到一个东西：线程池。</p>
+<h3 id="伪异步I-O编程"><a href="#伪异步I-O编程" class="headerlink" title="伪异步I&#x2F;O编程"></a>伪异步I&#x2F;O编程</h3><p>传统BIO编程遇到的最大问题就是每一个链路都会创建一个线程所造成的大量线程阻塞，以至于大量上下文切换导致的CPU资源消耗殆尽的问题，那么我们需要解决的就是线程，可以怎么做呢？</p>
+<p><strong>后端通过一个线程池来处理多个客户端的请求接入，形成客户端个数M:线程池最大线程数N的比例关系，其中M可以远远大于N，通过线程池可以灵活的调配线程资源，设置线程的最大值，防止由于海量并发接入的线程耗尽。</strong></p>
+<p>一般来讲我们在Java中会怎么实现呢：</p>
+<p>叫伪异步是因为这样我们相当于将任务提交给了线程池（任务队列），然后主线程就可以做别的事了，叫伪是因为它实际上存在很多缺陷，如下。</p>
+<p>是使用线程池和任务队列，这里就不展开说了，可以自己去了解一下Java线程池和队列的运行关系，那么你就会发现这种实现方式还是有问题的啊，因为它解决不断创建线程的方式是什么？是使用线程池来提供线程，而线程池的线程数量是有上限的，达到上限了会怎么办？会把新的任务提交给队列，但是任务队列也不是无限的啊，那队列也满了该怎么办呢。Java的任务队列中也是提供了一些处理，比如满了以后，后续所有的操作被阻塞，你也可以自己实现，但是问题是不论你怎么做，你都要开线程处理这些多出来的任务，或阻塞或抛弃，这就影响到了应用的整成运行。</p>
+<p>而且这并不是小概率事件，因为伪异步的底层还是同步阻塞的，你无法确定客户端和服务端的连接是否稳定，网络状况是否正常，如果处理缓慢就会导致线程阻塞，线程池中出现这种情况多了就会依次产生上面所说的情况，那么应该如何解决呢，让我们了解一下NIO，真正的异步IO是什么样的。</p>
+<h3 id="NIO编程"><a href="#NIO编程" class="headerlink" title="NIO编程"></a>NIO编程</h3><p>NIO的名字呢，有两种解释，一种是官方叫法：New I&#x2F;O，相当于是新增的一种I&#x2F;O类库，也可以理解成：Non-block I&#x2F;O，也就是非阻塞I&#x2F;O。</p>
+<p>以下一些解释和图片来自美团技术团队博客：<a href="https://tech.meituan.com/2016/11/04/nio.html">https://tech.meituan.com/2016/11/04/nio.html</a></p>
+<p>（强烈推荐，美团技术团队博客的质量非常硬，很多解释一针见血）</p>
+<p><strong>非阻塞式，也就是说，以socket.read()为例，NIO在执行的时候，如果TCP RecvBuffer中有数据，就把数据从网卡读到内存，并且返回给用户，反之则是直接返回0，永远不会阻塞。</strong></p>
+<p>NIO一个重要的特点是：socket主要的读、写、注册和接收函数，在等待就绪阶段都是非阻塞的，真正的I&#x2F;O操作是同步阻塞的（消耗CPU但性能非常高）。</p>
+<p>在Java中实现主要通过三大组件：Buffer、Channel和Selector</p>
+<p>Buffer是一个对象，包含要写入或者要读取的数据，在NIO中，所有的数据都会通过Buffer来操作，写入和读取都要先放进buffer（缓冲区内）。</p>
+<p>Channel是双向的数据通道，可以写入和读取数据。</p>
+<p>Selector是NIO的灵魂，多路复用器，它的作用是不断轮询注册到它上面的Channel，如果某个Channel上有新的事件（读、写、接入），那么该Channel就会变成就绪状态，然后被Selector轮询出来，我们就可以通过SelectionKey获取就绪的channel集合，进行后续操作。</p>
+<p>一个Selector可以同时轮询多个Cahnnel，因为底层支持了epoll()系统调用，它没有最大连接数的限制，这就意味着只需要一个线程来负责selector就可以接入成千上万的客户端，这是极大区别与伪异步和同步阻塞的，在大量的I&#x2F;O请求中，NIO将表现出比它们出色许多的效率和稳定性。</p>
+<h3 id="AIO-编程"><a href="#AIO-编程" class="headerlink" title="AIO 编程"></a>AIO 编程</h3><p><strong>真正的异步编程，它和其他几种IO的区别是：应用程序只需要向系统注册监听，然后由系统内核执行完所有操作后反向调用应用程序，而其他的都需要应用程序自己去调用判断，系统不会主动通知。</strong></p>
+<h2 id="总结："><a href="#总结：" class="headerlink" title="总结："></a>总结：</h2><p>以socket.read()为例子：</p>
+<p>传统的BIO里面socket.read()，如果TCP RecvBuffer里没有数据，函数会一直阻塞，直到收到数据，返回读到的数据。</p>
+<p>对于NIO，如果TCP RecvBuffer有数据，就把数据从网卡读到内存，并且返回给用户；反之则直接返回0，永远不会阻塞。</p>
+<p>最新的AIO(Async I&#x2F;O)里面会更进一步：不但等待就绪是非阻塞的，就连数据从网卡到内存的过程也是异步的。</p>
+<p><strong>换句话说，BIO里用户最关心“我要读”，NIO里用户最关心”我可以读了”，在AIO模型里用户更需要关注的是“读完了”。</strong></p>
+<p>NIO一个重要的特点是：socket主要的读、写、注册和接收函数，在等待就绪阶段都是非阻塞的，真正的I&#x2F;O操作是同步阻塞的（消耗CPU但性能非常高）。</p>
+<h2 id="引用资料："><a href="#引用资料：" class="headerlink" title="引用资料："></a>引用资料：</h2><ul>
+<li>美团技术团队博客：<a href="https://tech.meituan.com/2016/11/04/nio.html">https://tech.meituan.com/2016/11/04/nio.html</a></li>
+<li>《Netty权威指南》</li>
+</ul>
+]]></content>
+      <categories>
+        <category>Java</category>
+      </categories>
+      <tags>
+        <tag>IO</tag>
+        <tag>NIO</tag>
+      </tags>
+  </entry>
+</search>

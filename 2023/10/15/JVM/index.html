@@ -1,9 +1,332 @@
-<?xml version="1.0" encoding="utf-8"?>
-<search>
-  <entry>
-    <title>JVM</title>
-    <url>/2023/10/15/JVM/</url>
-    <content><![CDATA[<h1 id="JVM"><a href="#JVM" class="headerlink" title="JVM"></a>JVM</h1><h2 id="字节码"><a href="#字节码" class="headerlink" title="字节码"></a>字节码</h2><h4 id="字节码文件里是什么"><a href="#字节码文件里是什么" class="headerlink" title="字节码文件里是什么"></a>字节码文件里是什么</h4><p>源代码经过编译器编译就会生成字节码文件class，字节码文件是一种二进制的类文件，它的内容是JVM的指令，不是像c语言由编译器直接生成机器码。</p>
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha256-5eIC48iZUHmSlSUz9XtjRyK2mzQkHScZY1WdMaoz74E=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.21.1","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="JVM字节码字节码文件里是什么源代码经过编译器编译就会生成字节码文件class，字节码文件是一种二进制的类文件，它的内容是JVM的指令，不是像c语言由编译器直接生成机器码。 生成字节码的编译器 javac就是一个全量的前端编译器 前端编译器的主要任务就是负责将符合java语法规范的Java代码转换成符合JVM规范的字节码文件 前端编译器不涉及编译优化，这些具体的细节会交给HotSpot的JIT编译">
+<meta property="og:type" content="article">
+<meta property="og:title" content="JVM">
+<meta property="og:url" content="http://example.com/2023/10/15/JVM/index.html">
+<meta property="og:site_name" content="baiyin’s blog">
+<meta property="og:description" content="JVM字节码字节码文件里是什么源代码经过编译器编译就会生成字节码文件class，字节码文件是一种二进制的类文件，它的内容是JVM的指令，不是像c语言由编译器直接生成机器码。 生成字节码的编译器 javac就是一个全量的前端编译器 前端编译器的主要任务就是负责将符合java语法规范的Java代码转换成符合JVM规范的字节码文件 前端编译器不涉及编译优化，这些具体的细节会交给HotSpot的JIT编译">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://raw.githubusercontent.com/baiyina/baiyina.github.image/main/img/202403120010996.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/baiyina/baiyina.github.image/main/img/202403120021587.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/baiyina/baiyina.github.image/main/img/202403151159175.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/baiyina/baiyina.github.image/main/img/202403200942780.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/baiyina/baiyina.github.image/main/img/202403170903172.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/baiyina/baiyina.github.image/main/img/202403170936348.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/baiyina/baiyina.github.image/main/img/202403171054423.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/baiyina/baiyina.github.image/main/img/202403200942146.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/baiyina/baiyina.github.image/main/img/202403201340054.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/baiyina/baiyina.github.image/main/img/202403211045799.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/baiyina/baiyina.github.image/main/img/202403201530865.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/baiyina/baiyina.github.image/main/img/202403211040517.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/baiyina/baiyina.github.image/main/img/202403211256629.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/baiyina/baiyina.github.image/main/img/202403211257951.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/baiyina/baiyina.github.image/main/img/202403211449217.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/baiyina/baiyina.github.image/main/img/202403211453112.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/baiyina/baiyina.github.image/main/img/202403211511295.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/baiyina/baiyina.github.image/main/img/202403211518821.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/baiyina/baiyina.github.image/main/img/202403211524465.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/baiyina/baiyina.github.image/main/img/202403230926137.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/baiyina/baiyina.github.image/main/img/202403231618416.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/baiyina/baiyina.github.image/main/img/202403231609671.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/baiyina/baiyina.github.image/main/img/202403231610941.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/baiyina/baiyina.github.image/main/img/202403231631020.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/baiyina/baiyina.github.image/main/img/202403231914792.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/baiyina/baiyina.github.image/main/img/202403251828909.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/baiyina/baiyina.github.image/main/img/202403251855790.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/baiyina/baiyina.github.image/main/img/202403251857199.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/baiyina/baiyina.github.image/main/img/202403251924323.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/baiyina/baiyina.github.image/main/img/202403251923096.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/baiyina/baiyina.github.image/main/img/202403261712182.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/baiyina/baiyina.github.image/main/img/202403261754315.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/baiyina/baiyina.github.image/main/img/202403261808361.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/baiyina/baiyina.github.image/main/img/202403261926363.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/baiyina/baiyina.github.image/main/img/202403261927932.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/baiyina/baiyina.github.image/main/img/202403261927965.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/baiyina/baiyina.github.image/main/img/202403261932444.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/baiyina/baiyina.github.image/main/img/202403261943930.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/baiyina/baiyina.github.image/main/img/202403261939744.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/baiyina/baiyina.github.image/main/img/202403261954985.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/baiyina/baiyina.github.image/main/img/202403261955908.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/baiyina/baiyina.github.image/main/img/202403261955632.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/baiyina/baiyina.github.image/main/img/202403262021178.png">
+<meta property="article:published_time" content="2023-10-15T02:15:00.000Z">
+<meta property="article:modified_time" content="2024-11-09T15:16:09.806Z">
+<meta property="article:author" content="baiyina">
+<meta property="article:tag" content="Java">
+<meta property="article:tag" content="JVM">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/baiyina/baiyina.github.image/main/img/202403120010996.png">
+
+
+<link rel="canonical" href="http://example.com/2023/10/15/JVM/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://example.com/2023/10/15/JVM/","path":"2023/10/15/JVM/","title":"JVM"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>JVM | baiyin’s blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">baiyin’s blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">金猴奋起千钧棒，玉宇澄清万里埃</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#JVM"><span class="nav-number">1.</span> <span class="nav-text">JVM</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AD%97%E8%8A%82%E7%A0%81"><span class="nav-number">1.1.</span> <span class="nav-text">字节码</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AD%97%E8%8A%82%E7%A0%81%E6%96%87%E4%BB%B6%E9%87%8C%E6%98%AF%E4%BB%80%E4%B9%88"><span class="nav-number">1.1.0.1.</span> <span class="nav-text">字节码文件里是什么</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%94%9F%E6%88%90%E5%AD%97%E8%8A%82%E7%A0%81%E7%9A%84%E7%BC%96%E8%AF%91%E5%99%A8"><span class="nav-number">1.1.1.</span> <span class="nav-text">生成字节码的编译器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%93%AA%E4%BA%9B%E7%B1%BB%E5%9E%8B%E6%9C%89Class%E5%AF%B9%E8%B1%A1"><span class="nav-number">1.1.2.</span> <span class="nav-text">哪些类型有Class对象</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E5%AD%97%E8%8A%82%E7%A0%81%E6%8C%87%E4%BB%A4"><span class="nav-number">1.1.3.</span> <span class="nav-text">什么是字节码指令</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Class%E6%96%87%E4%BB%B6%E7%BB%93%E6%9E%84"><span class="nav-number">1.2.</span> <span class="nav-text">Class文件结构</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%AD%94%E6%95%B0"><span class="nav-number">1.2.1.</span> <span class="nav-text">魔数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B8%B8%E9%87%8F%E6%B1%A0"><span class="nav-number">1.2.2.</span> <span class="nav-text">常量池</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AD%97%E9%9D%A2%E9%87%8F%E5%92%8C%E7%AC%A6%E5%8F%B7%E5%BC%95%E7%94%A8"><span class="nav-number">1.2.2.1.</span> <span class="nav-text">字面量和符号引用</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AC%A6%E5%8F%B7%E5%BC%95%E7%94%A8%E5%92%8C%E7%9B%B4%E6%8E%A5%E5%BC%95%E7%94%A8"><span class="nav-number">1.2.3.</span> <span class="nav-text">符号引用和直接引用</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%9D%A2%E8%AF%95%E9%A2%98"><span class="nav-number">1.3.</span> <span class="nav-text">面试题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Java%E8%99%9A%E6%8B%9F%E6%9C%BA%E4%B8%AD%EF%BC%8C%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E5%8F%AF%E4%BB%A5%E5%88%86%E4%B8%BA%E5%93%AA%E5%87%A0%E7%B1%BB%EF%BC%9F"><span class="nav-number">1.3.1.</span> <span class="nav-text">Java虚拟机中，数据类型可以分为哪几类？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E4%B8%8D%E6%8A%8A%E5%9F%BA%E6%9C%AC%E7%B1%BB%E5%9E%8B%E6%94%BE%E5%A0%86%E4%B8%AD%EF%BC%9F"><span class="nav-number">1.3.2.</span> <span class="nav-text">为什么不把基本类型放堆中？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Java%E4%B8%AD%E6%9C%89%E6%B2%A1%E6%9C%89%E6%8C%87%E9%92%88"><span class="nav-number">1.3.3.</span> <span class="nav-text">Java中有没有指针</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Java%E7%9A%84%E5%8F%82%E6%95%B0%E4%BC%A0%E9%80%92%E6%98%AF%E5%80%BC%E4%BC%A0%E9%80%92%E8%BF%98%E6%98%AF%E5%BC%95%E7%94%A8%E4%BC%A0%E9%80%92"><span class="nav-number">1.3.4.</span> <span class="nav-text">Java的参数传递是值传递还是引用传递</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AE%9E%E5%8F%82%E4%B8%8E%E5%BD%A2%E5%8F%82"><span class="nav-number">1.3.4.1.</span> <span class="nav-text">实参与形参</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%80%BC%E4%BC%A0%E9%80%92%E5%92%8C%E5%BC%95%E7%94%A8%E4%BC%A0%E9%80%92"><span class="nav-number">1.3.4.2.</span> <span class="nav-text">值传递和引用传递</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%B1%BB%E5%8A%A0%E8%BD%BD%E6%9C%BA%E5%88%B6"><span class="nav-number">1.4.</span> <span class="nav-text">类加载机制</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%B1%BB%E5%8A%A0%E8%BD%BD%E8%BF%87%E7%A8%8B"><span class="nav-number">1.4.1.</span> <span class="nav-text">类加载过程</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8A%A0%E8%BD%BD"><span class="nav-number">1.4.1.1.</span> <span class="nav-text">加载</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#loading%EF%BC%88%E8%A3%85%E8%BD%BD%EF%BC%89"><span class="nav-number">1.4.1.2.</span> <span class="nav-text">loading（装载）</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E4%BA%8C%E8%BF%9B%E5%88%B6%E6%B5%81%E7%9A%84%E8%8E%B7%E5%8F%96%E6%96%B9%E5%BC%8F"><span class="nav-number">1.4.1.2.1.</span> <span class="nav-text">二进制流的获取方式</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Class%E5%AE%9E%E4%BE%8B%E7%9A%84%E4%BD%8D%E7%BD%AE%E5%9C%A8%E5%93%AA"><span class="nav-number">1.4.1.2.2.</span> <span class="nav-text">Class实例的位置在哪</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%95%B0%E7%BB%84%E7%B1%BB%E7%9A%84%E5%8A%A0%E8%BD%BD"><span class="nav-number">1.4.1.2.3.</span> <span class="nav-text">数组类的加载</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Linking-%E9%93%BE%E6%8E%A5"><span class="nav-number">1.4.1.3.</span> <span class="nav-text">Linking 链接</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E9%AA%8C%E8%AF%81-Verification"><span class="nav-number">1.4.1.3.1.</span> <span class="nav-text">验证 Verification</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%87%86%E5%A4%87-Preparation"><span class="nav-number">1.4.1.3.2.</span> <span class="nav-text">准备 Preparation</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E8%A7%A3%E6%9E%90-Resolution"><span class="nav-number">1.4.1.3.3.</span> <span class="nav-text">解析 Resolution</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Initialization-%E5%88%9D%E5%A7%8B%E5%8C%96"><span class="nav-number">1.4.1.4.</span> <span class="nav-text">Initialization 初始化</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%93%AA%E4%BA%9B%E7%B1%BB%E4%B8%8D%E4%BC%9A%E7%94%9F%E6%88%90clinit%E6%96%B9%E6%B3%95%EF%BC%9F"><span class="nav-number">1.4.1.4.1.</span> <span class="nav-text">哪些类不会生成clinit方法？</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#static-final%E6%90%AD%E9%85%8D%E6%97%B6%E4%B8%8D%E4%B8%80%E5%AE%9A%E4%B8%8D%E7%94%9F%E6%88%90clinit%E6%96%B9%E6%B3%95"><span class="nav-number">1.4.1.4.2.</span> <span class="nav-text">static final搭配时不一定不生成clinit方法</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#clinit-%E6%96%B9%E6%B3%95%E6%9C%89%E5%B8%A6%E9%94%81%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8%E5%A4%84%E7%90%86"><span class="nav-number">1.4.1.4.3.</span> <span class="nav-text">&lt; clinit &gt;方法有带锁线程安全处理</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E7%B1%BB%E7%9A%84%E5%88%9D%E5%A7%8B%E5%8C%96%E6%83%85%E5%86%B5%EF%BC%8C%E4%B8%BB%E5%8A%A8%E4%BD%BF%E7%94%A8%E5%92%8C%E8%A2%AB%E5%8A%A8%E4%BD%BF%E7%94%A8"><span class="nav-number">1.4.1.4.4.</span> <span class="nav-text">类的初始化情况，主动使用和被动使用</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E4%B8%BB%E5%8A%A8%E4%BD%BF%E7%94%A8"><span class="nav-number">1.4.1.4.5.</span> <span class="nav-text">主动使用</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Unloading-%E5%8D%B8%E8%BD%BD"><span class="nav-number">1.4.1.5.</span> <span class="nav-text">Unloading 卸载</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E7%B1%BB%E3%80%81%E7%B1%BB%E7%9A%84%E5%8A%A0%E8%BD%BD%E5%99%A8%E3%80%81%E7%B1%BB%E7%9A%84%E5%AE%9E%E4%BE%8B%E4%B9%8B%E9%97%B4%E7%9A%84%E5%85%B3%E7%B3%BB"><span class="nav-number">1.4.1.5.1.</span> <span class="nav-text">类、类的加载器、类的实例之间的关系</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%83%85%E5%86%B5%E4%B8%8B%E7%B1%BB%E4%BC%9A%E8%A2%AB%E5%8D%B8%E8%BD%BD"><span class="nav-number">1.4.1.5.2.</span> <span class="nav-text">什么情况下类会被卸载</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E7%B1%BB%E5%8D%B8%E8%BD%BD%E5%9C%A8%E5%AE%9E%E9%99%85%E7%94%9F%E4%BA%A7%E4%B8%AD%E7%9A%84%E6%83%85%E5%86%B5"><span class="nav-number">1.4.1.5.3.</span> <span class="nav-text">类卸载在实际生产中的情况</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%96%B9%E6%B3%95%E5%8C%BA%E7%9A%84%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6"><span class="nav-number">1.4.1.5.4.</span> <span class="nav-text">方法区的垃圾回收</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%B1%BB%E5%8A%A0%E8%BD%BD%E5%99%A8"><span class="nav-number">1.4.2.</span> <span class="nav-text">类加载器</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BD%9C%E7%94%A8"><span class="nav-number">1.4.2.1.</span> <span class="nav-text">作用</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#ClassLoader%E7%9A%84%E4%BD%9C%E7%94%A8"><span class="nav-number">1.4.2.1.1.</span> <span class="nav-text">ClassLoader的作用</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%B1%BB%E7%9A%84%E6%98%BE%E5%BC%8F%E5%8A%A0%E8%BD%BD%E5%92%8C%E9%9A%90%E5%BC%8F%E5%8A%A0%E8%BD%BD"><span class="nav-number">1.4.2.2.</span> <span class="nav-text">类的显式加载和隐式加载</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%B1%BB%E5%8A%A0%E8%BD%BD%E6%9C%BA%E5%88%B6%E7%9A%84%E5%BF%85%E8%A6%81%E6%80%A7"><span class="nav-number">1.4.2.3.</span> <span class="nav-text">类加载机制的必要性</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8A%A0%E8%BD%BD%E7%9A%84%E7%B1%BB%E6%98%AF%E5%94%AF%E4%B8%80%E7%9A%84%E5%90%97"><span class="nav-number">1.4.2.4.</span> <span class="nav-text">加载的类是唯一的吗</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#1-%E7%B1%BB%E7%9A%84%E5%94%AF%E4%B8%80%E6%80%A7"><span class="nav-number">1.4.2.4.1.</span> <span class="nav-text">1.类的唯一性</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#2-%E5%91%BD%E5%90%8D%E7%A9%BA%E9%97%B4"><span class="nav-number">1.4.2.4.2.</span> <span class="nav-text">2.命名空间</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%B1%BB%E5%8A%A0%E8%BD%BD%E6%9C%BA%E5%88%B6%E7%9A%84%E5%9F%BA%E6%9C%AC%E7%89%B9%E5%BE%81"><span class="nav-number">1.4.2.5.</span> <span class="nav-text">类加载机制的基本特征</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8F%8C%E4%BA%B2%E5%A7%94%E6%B4%BE%E6%A8%A1%E5%9E%8B"><span class="nav-number">1.4.2.6.</span> <span class="nav-text">双亲委派模型</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%B1%BB%E5%8A%A0%E8%BD%BD%E5%99%A8%E7%9A%84%E5%88%86%E7%B1%BB%E5%92%8C%E6%B5%8B%E8%AF%95"><span class="nav-number">1.4.3.</span> <span class="nav-text">类加载器的分类和测试</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%B1%BB%E5%8A%A0%E8%BD%BD%E5%99%A8%E7%9A%84%E5%88%86%E7%B1%BB%E8%AF%B4%E6%98%8E"><span class="nav-number">1.4.3.1.</span> <span class="nav-text">类加载器的分类说明</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AD%90%E7%88%B6%E7%B1%BB%E5%8A%A0%E8%BD%BD%E5%99%A8%E7%9A%84%E5%85%B3%E7%B3%BB"><span class="nav-number">1.4.3.2.</span> <span class="nav-text">子父类加载器的关系</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%85%B7%E4%BD%93%E7%B1%BB%E5%8A%A0%E8%BD%BD%E5%99%A8%E4%BB%8B%E7%BB%8D"><span class="nav-number">1.4.3.3.</span> <span class="nav-text">具体类加载器介绍</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%90%AF%E5%8A%A8%E7%B1%BB%E5%8A%A0%E8%BD%BD%E5%99%A8%EF%BC%88%E5%BC%95%E5%AF%BC%E7%B1%BB%E5%8A%A0%E8%BD%BD%E5%99%A8%EF%BC%89"><span class="nav-number">1.4.3.3.1.</span> <span class="nav-text">启动类加载器（引导类加载器）</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%89%A9%E5%B1%95%E7%B1%BB%E5%8A%A0%E8%BD%BD%E5%99%A8"><span class="nav-number">1.4.3.3.2.</span> <span class="nav-text">扩展类加载器</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%BA%94%E7%94%A8%E7%A8%8B%E5%BA%8F%E7%B1%BB%E5%8A%A0%E8%BD%BD%E5%99%A8%EF%BC%88%E7%B3%BB%E7%BB%9F%E7%B1%BB%E5%8A%A0%E8%BD%BD%E5%99%A8%EF%BC%89"><span class="nav-number">1.4.3.3.3.</span> <span class="nav-text">应用程序类加载器（系统类加载器）</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E7%94%A8%E6%88%B7%E8%87%AA%E5%AE%9A%E4%B9%89%E7%B1%BB%E5%8A%A0%E8%BD%BD%E5%99%A8"><span class="nav-number">1.4.3.3.4.</span> <span class="nav-text">用户自定义类加载器</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ClassLoader%E6%BA%90%E7%A0%81%E5%89%96%E6%9E%90"><span class="nav-number">1.4.4.</span> <span class="nav-text">ClassLoader源码剖析</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%B1%BB%E5%8A%A0%E8%BD%BD%E5%99%A8%E7%9A%84%E5%88%86%E7%B1%BB%E8%AF%B4%E6%98%8E-1"><span class="nav-number">1.4.4.1.</span> <span class="nav-text">类加载器的分类说明</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%87%AA%E5%AE%9A%E4%B9%89%E7%B1%BB%E7%9A%84%E5%8A%A0%E8%BD%BD%E5%99%A8"><span class="nav-number">1.4.5.</span> <span class="nav-text">自定义类的加载器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%8C%E4%BA%B2%E5%A7%94%E6%B4%BE%E6%9C%BA%E5%88%B6"><span class="nav-number">1.4.6.</span> <span class="nav-text">双亲委派机制</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90"><span class="nav-number">1.4.6.1.</span> <span class="nav-text">源码分析</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BC%98%E5%8A%BF%E5%92%8C%E5%8A%A3%E5%8A%BF"><span class="nav-number">1.4.6.2.</span> <span class="nav-text">优势和劣势</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E4%BC%98%E5%8A%BF"><span class="nav-number">1.4.6.2.1.</span> <span class="nav-text">优势</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%8A%A3%E5%8A%BF"><span class="nav-number">1.4.6.2.2.</span> <span class="nav-text">劣势</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%A0%B4%E5%9D%8F%E5%8F%8C%E4%BA%B2%E5%A7%94%E6%B4%BE%E6%9C%BA%E5%88%B6"><span class="nav-number">1.4.6.3.</span> <span class="nav-text">破坏双亲委派机制</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E7%AC%AC%E4%B8%80%E6%AC%A1"><span class="nav-number">1.4.6.3.1.</span> <span class="nav-text">第一次</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E7%AC%AC%E4%BA%8C%E6%AC%A1"><span class="nav-number">1.4.6.3.2.</span> <span class="nav-text">第二次</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E7%AC%AC%E4%B8%89%E6%AC%A1"><span class="nav-number">1.4.6.3.3.</span> <span class="nav-text">第三次</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BF%90%E8%A1%8C%E6%97%B6%E5%86%85%E5%AD%98"><span class="nav-number">1.5.</span> <span class="nav-text">运行时内存</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%A8%8B%E5%BA%8F%E8%AE%A1%E6%95%B0%E5%99%A8"><span class="nav-number">1.5.1.</span> <span class="nav-text">程序计数器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%99%9A%E6%8B%9F%E6%9C%BA%E6%A0%88"><span class="nav-number">1.5.2.</span> <span class="nav-text">虚拟机栈</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-number">1.5.2.1.</span> <span class="nav-text">概述</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E7%90%86%E8%A7%A3%E6%A0%88%E7%AE%A1%E8%BF%90%E8%A1%8C%EF%BC%8C%E5%A0%86%E7%AE%A1%E5%AD%98%E5%82%A8"><span class="nav-number">1.5.2.1.1.</span> <span class="nav-text">如何理解栈管运行，堆管存储</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%A0%88%E4%B8%AD%E5%AD%98%E5%9C%A8GC%E5%90%97"><span class="nav-number">1.5.2.1.2.</span> <span class="nav-text">栈中存在GC吗</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%A0%88%E4%BC%9A%E7%88%86%E5%87%BA%E4%BB%80%E4%B9%88%E5%BC%82%E5%B8%B8"><span class="nav-number">1.5.2.1.3.</span> <span class="nav-text">栈会爆出什么异常</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%A0%88%E4%BC%9A%E5%9C%A8%E4%BB%80%E4%B9%88%E6%83%85%E5%86%B5%E4%B8%8B%E5%8F%91%E7%94%9F%E6%A0%88%E5%86%85%E5%AD%98%E6%BA%A2%E5%87%BA"><span class="nav-number">1.5.2.1.4.</span> <span class="nav-text">栈会在什么情况下发生栈内存溢出</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Java%E4%B8%AD%EF%BC%8C%E6%A0%88%E7%9A%84%E5%A4%A7%E5%B0%8F%E9%80%9A%E8%BF%87%E4%BB%80%E4%B9%88%E5%8F%82%E6%95%B0%E6%9D%A5%E8%AE%BE%E7%BD%AE"><span class="nav-number">1.5.2.1.5.</span> <span class="nav-text">Java中，栈的大小通过什么参数来设置</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%A0%88%E5%B8%A7"><span class="nav-number">1.5.2.2.</span> <span class="nav-text">栈帧</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%A0%88%E7%9A%84FILO%E5%8E%9F%E7%90%86"><span class="nav-number">1.5.2.2.1.</span> <span class="nav-text">栈的FILO原理</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%A0%88%E5%B8%A7%E7%9A%84%E5%86%85%E9%83%A8%E7%BB%93%E6%9E%84"><span class="nav-number">1.5.2.3.</span> <span class="nav-text">栈帧的内部结构</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%B1%80%E9%83%A8%E5%8F%98%E9%87%8F%E8%A1%A8"><span class="nav-number">1.5.2.3.1.</span> <span class="nav-text">局部变量表</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#%E9%9D%99%E6%80%81%E5%8F%98%E9%87%8F%E5%92%8C%E5%B1%80%E9%83%A8%E5%8F%98%E9%87%8F%E7%9A%84%E5%AF%B9%E6%AF%94"><span class="nav-number">1.5.2.3.1.1.</span> <span class="nav-text">静态变量和局部变量的对比</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#GC-Roots"><span class="nav-number">1.5.2.3.1.2.</span> <span class="nav-text">GC Roots</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#Slot"><span class="nav-number">1.5.2.3.1.3.</span> <span class="nav-text">Slot</span></a></li></ol></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%93%8D%E4%BD%9C%E6%95%B0%E6%A0%88"><span class="nav-number">1.5.2.3.2.</span> <span class="nav-text">操作数栈</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#%E6%A0%88%E9%A1%B6%E7%BC%93%E5%AD%98%E6%8A%80%E6%9C%AF"><span class="nav-number">1.5.2.3.2.1.</span> <span class="nav-text">栈顶缓存技术</span></a></li></ol></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%8A%A8%E6%80%81%E9%93%BE%E6%8E%A5%EF%BC%88%E6%8C%87%E5%90%91%E8%BF%90%E8%A1%8C%E6%97%B6%E5%B8%B8%E9%87%8F%E6%B1%A0%E7%9A%84%E6%96%B9%E6%B3%95%E5%BC%95%E7%94%A8%EF%BC%89"><span class="nav-number">1.5.2.3.3.</span> <span class="nav-text">动态链接（指向运行时常量池的方法引用）</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%96%B9%E6%B3%95%E8%BF%94%E5%9B%9E%E5%9C%B0%E5%9D%80"><span class="nav-number">1.5.2.3.4.</span> <span class="nav-text">方法返回地址</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%97%AE%E9%A2%98%E5%92%8C%E5%B0%8F%E7%BB%93"><span class="nav-number">1.5.2.4.</span> <span class="nav-text">问题和小结</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%A0%88%E6%BA%A2%E5%87%BA%E7%9A%84%E6%83%85%E5%86%B5"><span class="nav-number">1.5.2.4.1.</span> <span class="nav-text">栈溢出的情况</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%88%86%E9%85%8D%E7%9A%84%E6%A0%88%E5%86%85%E5%AD%98%E8%B6%8A%E5%A4%A7%E8%B6%8A%E5%A5%BD%E5%90%97%EF%BC%9F"><span class="nav-number">1.5.2.4.2.</span> <span class="nav-text">分配的栈内存越大越好吗？</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E6%98%AF%E5%90%A6%E4%BC%9A%E6%B6%89%E5%8F%8A%E5%88%B0%E8%99%9A%E6%8B%9F%E6%9C%BA%E6%A0%88"><span class="nav-number">1.5.2.4.3.</span> <span class="nav-text">垃圾回收是否会涉及到虚拟机栈</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%96%B9%E6%B3%95%E4%B8%AD%E5%AE%9A%E4%B9%89%E7%9A%84%E5%B1%80%E9%83%A8%E5%8F%98%E9%87%8F%E6%98%AF%E5%90%A6%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8"><span class="nav-number">1.5.2.4.4.</span> <span class="nav-text">方法中定义的局部变量是否线程安全</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A0%86"><span class="nav-number">1.6.</span> <span class="nav-text">堆</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A0%B8%E5%BF%83%E6%A6%82%E8%BF%B0"><span class="nav-number">1.6.1.</span> <span class="nav-text">核心概述</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%AF%B9%E8%B1%A1%E9%83%BD%E5%88%86%E9%85%8D%E5%9C%A8%E5%A0%86%E4%B8%8A%EF%BC%9F"><span class="nav-number">1.6.1.0.1.</span> <span class="nav-text">对象都分配在堆上？</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A0%86%E7%9A%84%E5%86%85%E9%83%A8%E7%BB%93%E6%9E%84"><span class="nav-number">1.6.2.</span> <span class="nav-text">堆的内部结构</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%B9%B4%E8%BD%BB%E4%BB%A3%E5%92%8C%E8%80%81%E5%B9%B4%E4%BB%A3"><span class="nav-number">1.6.2.1.</span> <span class="nav-text">年轻代和老年代</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E8%AE%BE%E7%BD%AE%E5%A0%86%E5%86%85%E5%AD%98%E7%9A%84%E5%A4%A7%E5%B0%8F"><span class="nav-number">1.6.3.</span> <span class="nav-text">如何设置堆内存的大小</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%96%B0%E7%94%9F%E4%BB%A3%E5%92%8C%E8%80%81%E5%B9%B4%E4%BB%A3%E7%9A%84%E6%AF%94%E4%BE%8B"><span class="nav-number">1.6.3.1.</span> <span class="nav-text">新生代和老年代的比例</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Eden%EF%BC%8C%E5%B9%B8%E5%AD%98%E8%80%85%E5%8C%BA%E6%AF%94%E4%BE%8B"><span class="nav-number">1.6.3.2.</span> <span class="nav-text">Eden，幸存者区比例</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AF%B9%E8%B1%A1%E5%88%86%E9%85%8D%E9%87%91%E5%8F%A5"><span class="nav-number">1.6.4.</span> <span class="nav-text">对象分配金句</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%86%85%E5%AD%98%E5%88%86%E9%85%8D%E5%8E%9F%E5%88%99"><span class="nav-number">1.6.4.1.</span> <span class="nav-text">内存分配原则</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%BF%87%E7%A8%8B%E5%89%96%E6%9E%90"><span class="nav-number">1.6.4.2.</span> <span class="nav-text">过程剖析</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AF%A6%E7%BB%86%E8%A7%A3%E9%87%8AMinor-GC-Major-GC-Full-GC"><span class="nav-number">1.6.5.</span> <span class="nav-text">详细解释Minor GC, Major GC, Full GC</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%A7%A3%E9%87%8A"><span class="nav-number">1.6.5.1.</span> <span class="nav-text">解释</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Minor-GC"><span class="nav-number">1.6.5.2.</span> <span class="nav-text">Minor GC</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Major-GC"><span class="nav-number">1.6.5.3.</span> <span class="nav-text">Major GC</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Full-GC%E8%A7%A6%E5%8F%91%E6%9C%BA%E5%88%B6"><span class="nav-number">1.6.5.4.</span> <span class="nav-text">Full GC触发机制</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E5%88%86%E4%BB%A3"><span class="nav-number">1.6.6.</span> <span class="nav-text">为什么要分代</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#TLAB"><span class="nav-number">1.6.7.</span> <span class="nav-text">TLAB</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%96%B9%E6%B3%95%E5%8C%BA"><span class="nav-number">1.7.</span> <span class="nav-text">方法区</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%A0%88%E3%80%81%E5%A0%86%E3%80%81%E6%96%B9%E6%B3%95%E5%8C%BA%E7%9A%84%E5%85%B3%E7%B3%BB"><span class="nav-number">1.7.0.1.</span> <span class="nav-text">栈、堆、方法区的关系</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%96%B9%E6%B3%95%E5%8C%BA%E5%9C%A8%E5%93%AA%E9%87%8C"><span class="nav-number">1.7.1.</span> <span class="nav-text">方法区在哪里</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%96%B9%E6%B3%95%E5%8C%BA%E7%9A%84%E7%90%86%E8%A7%A3"><span class="nav-number">1.7.2.</span> <span class="nav-text">方法区的理解</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#HotSpot%E4%B8%AD%E6%96%B9%E6%B3%95%E5%8C%BA%E7%9A%84%E6%BC%94%E8%BF%9B"><span class="nav-number">1.7.3.</span> <span class="nav-text">HotSpot中方法区的演进</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B0%B8%E4%B9%85%E4%BB%A3%E4%B8%8E%E5%85%83%E7%A9%BA%E9%97%B4"><span class="nav-number">1.7.4.</span> <span class="nav-text">永久代与元空间</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%B0%B8%E4%B9%85%E4%BB%A3%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E8%A2%AB%E5%85%83%E7%A9%BA%E9%97%B4%E6%9B%BF%E6%8D%A2"><span class="nav-number">1.7.4.1.</span> <span class="nav-text">永久代为什么要被元空间替换</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%86%85%E5%AD%98%E5%B8%83%E5%B1%80"><span class="nav-number">1.8.</span> <span class="nav-text">对象的内存布局</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%AE%9E%E4%BE%8B%E5%8C%96"><span class="nav-number">1.8.1.</span> <span class="nav-text">对象的实例化</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%88%9B%E5%BB%BA%E5%AF%B9%E8%B1%A1%E7%9A%84%E6%96%B9%E5%BC%8F"><span class="nav-number">1.8.1.1.</span> <span class="nav-text">创建对象的方式</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#new"><span class="nav-number">1.8.1.1.1.</span> <span class="nav-text">new</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Class%E7%9A%84newInstance"><span class="nav-number">1.8.1.1.2.</span> <span class="nav-text">Class的newInstance</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Constructor%E7%9A%84newInstance-Xxx"><span class="nav-number">1.8.1.1.3.</span> <span class="nav-text">Constructor的newInstance(Xxx)</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8Clone%EF%BC%88%EF%BC%89"><span class="nav-number">1.8.1.1.4.</span> <span class="nav-text">使用Clone（）</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96"><span class="nav-number">1.8.1.1.5.</span> <span class="nav-text">使用反序列化</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E7%AC%AC%E4%B8%89%E6%96%B9%E5%BA%93Objenesis"><span class="nav-number">1.8.1.1.6.</span> <span class="nav-text">第三方库Objenesis</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%88%9B%E5%BB%BA%E5%AF%B9%E8%B1%A1%E7%9A%84%E6%AD%A5%E9%AA%A4"><span class="nav-number">1.8.1.2.</span> <span class="nav-text">创建对象的步骤</span></a></li></ol></li></ol></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="baiyina"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">baiyina</p>
+  <div class="site-description" itemprop="description">莫道君行早，更有早行人</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">1</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">分类</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">标签</span>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/baiyina" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;baiyina" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:baiyinaGuo@gmail.com" title="E-Mail → mailto:baiyinaGuo@gmail.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2023/10/15/JVM/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="baiyina">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="baiyin’s blog">
+      <meta itemprop="description" content="莫道君行早，更有早行人">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="JVM | baiyin’s blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          JVM
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2023-10-15 10:15:00" itemprop="dateCreated datePublished" datetime="2023-10-15T10:15:00+08:00">2023-10-15</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2024-11-09 23:16:09" itemprop="dateModified" datetime="2024-11-09T23:16:09+08:00">2024-11-09</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Java/JVM/" itemprop="url" rel="index"><span itemprop="name">JVM</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>22k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>39 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h1 id="JVM"><a href="#JVM" class="headerlink" title="JVM"></a>JVM</h1><h2 id="字节码"><a href="#字节码" class="headerlink" title="字节码"></a>字节码</h2><h4 id="字节码文件里是什么"><a href="#字节码文件里是什么" class="headerlink" title="字节码文件里是什么"></a>字节码文件里是什么</h4><p>源代码经过编译器编译就会生成字节码文件class，字节码文件是一种二进制的类文件，它的内容是JVM的指令，不是像c语言由编译器直接生成机器码。</p>
 <h3 id="生成字节码的编译器"><a href="#生成字节码的编译器" class="headerlink" title="生成字节码的编译器"></a>生成字节码的编译器</h3><p><img src="https://raw.githubusercontent.com/baiyina/baiyina.github.image/main/img/202403120010996.png" alt="image-20240312000940738"></p>
 <p>javac就是一个全量的前端编译器</p>
 <p>前端编译器的主要任务就是负责将符合java语法规范的Java代码转换成符合JVM规范的字节码文件</p>
@@ -90,18 +413,18 @@
 <h4 id="值传递和引用传递"><a href="#值传递和引用传递" class="headerlink" title="值传递和引用传递"></a>值传递和引用传递</h4><p><strong>值传递</strong>：将参数复制一份，修改形参不会对实参造成影响</p>
 <p><strong>引用传递</strong>：将实参的地址传递给形参，修改形参也就是在修改实参。</p>
 <p>演示：</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span>: zhangguoa</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@description</span>: TODO</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span>: 2024/3/17 9:56</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@version</span>: 1.0</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Test</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        <span class="type">StringBuilder</span> <span class="variable">str</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">StringBuilder</span>(<span class="string">&quot;zhangsan&quot;</span>);</span><br><span class="line">        <span class="keyword">new</span> <span class="title class_">Test</span>().pass(str);</span><br><span class="line">        System.out.println(<span class="string">&quot;main: &quot;</span> + str);</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">void</span> <span class="title function_">pass</span> <span class="params">(StringBuilder str)</span> &#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;pass: &quot;</span> +  str);</span><br><span class="line">        str.reverse();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span>: zhangguoa</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@description</span>: TODO</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span>: 2024/3/17 9:56</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@version</span>: 1.0</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Test</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        <span class="type">StringBuilder</span> <span class="variable">str</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">StringBuilder</span>(<span class="string">&quot;zhangsan&quot;</span>);</span><br><span class="line">        <span class="keyword">new</span> <span class="title class_">Test</span>().pass(str);</span><br><span class="line">        System.out.println(<span class="string">&quot;main: &quot;</span> + str);</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">void</span> <span class="title function_">pass</span> <span class="params">(StringBuilder str)</span> &#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;pass: &quot;</span> +  str);</span><br><span class="line">        str.reverse();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
 
 <p>输出为：</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">pass: zhangsan</span><br><span class="line">main: nasgnahz</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">pass: zhangsan</span><br><span class="line">main: nasgnahz</span><br></pre></td></tr></table></figure>
 
 <p>看起来是改变了str的值，其实不是，暂且按下不表，再看一个例子</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span>: zhangguoa</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@description</span>: TODO</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span>: 2024/3/17 9:56</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@version</span>: 1.0</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Test</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        <span class="type">StringBuilder</span> <span class="variable">str</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">StringBuilder</span>(<span class="string">&quot;zhangsan&quot;</span>);</span><br><span class="line">        <span class="keyword">new</span> <span class="title class_">Test</span>().pass(str);</span><br><span class="line">        System.out.println(<span class="string">&quot;main: &quot;</span> + str);</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">void</span> <span class="title function_">pass</span> <span class="params">(StringBuilder str)</span> &#123;</span><br><span class="line">        <span class="type">StringBuilder</span> <span class="variable">str2</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">StringBuilder</span>(<span class="string">&quot;lisi&quot;</span>);</span><br><span class="line">        System.out.println(<span class="string">&quot;pass: &quot;</span> +  str);</span><br><span class="line">        str = str2;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span>: zhangguoa</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@description</span>: TODO</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span>: 2024/3/17 9:56</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@version</span>: 1.0</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Test</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        <span class="type">StringBuilder</span> <span class="variable">str</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">StringBuilder</span>(<span class="string">&quot;zhangsan&quot;</span>);</span><br><span class="line">        <span class="keyword">new</span> <span class="title class_">Test</span>().pass(str);</span><br><span class="line">        System.out.println(<span class="string">&quot;main: &quot;</span> + str);</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">void</span> <span class="title function_">pass</span> <span class="params">(StringBuilder str)</span> &#123;</span><br><span class="line">        <span class="type">StringBuilder</span> <span class="variable">str2</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">StringBuilder</span>(<span class="string">&quot;lisi&quot;</span>);</span><br><span class="line">        System.out.println(<span class="string">&quot;pass: &quot;</span> +  str);</span><br><span class="line">        str = str2;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
 
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">pass: zhangsan</span><br><span class="line">main: zhangsan</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">pass: zhangsan</span><br><span class="line">main: zhangsan</span><br></pre></td></tr></table></figure>
 
 <p>可以看出，这里我们直接对形参str的值进行改变，但是并未改变str的原值，说明并没有起到效果，这符合值传递的定义，再看一个：</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span>: zhangguoa</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@description</span>: TODO</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span>: 2024/3/17 9:56</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@version</span>: 1.0</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Test</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        <span class="type">StringBuilder</span> <span class="variable">str</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">StringBuilder</span>(<span class="string">&quot;zhangsan&quot;</span>);</span><br><span class="line">        <span class="keyword">new</span> <span class="title class_">Test</span>().pass(str);</span><br><span class="line">        System.out.println(<span class="string">&quot;main: &quot;</span> + str);</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">void</span> <span class="title function_">pass</span> <span class="params">(StringBuilder str)</span> &#123;</span><br><span class="line">        <span class="type">StringBuilder</span> <span class="variable">str2</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">StringBuilder</span>(<span class="string">&quot;lisi&quot;</span>);</span><br><span class="line">        System.out.println(<span class="string">&quot;pass: &quot;</span> +  str);</span><br><span class="line">        str.append(str2);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span>: zhangguoa</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@description</span>: TODO</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span>: 2024/3/17 9:56</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@version</span>: 1.0</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Test</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        <span class="type">StringBuilder</span> <span class="variable">str</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">StringBuilder</span>(<span class="string">&quot;zhangsan&quot;</span>);</span><br><span class="line">        <span class="keyword">new</span> <span class="title class_">Test</span>().pass(str);</span><br><span class="line">        System.out.println(<span class="string">&quot;main: &quot;</span> + str);</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">void</span> <span class="title function_">pass</span> <span class="params">(StringBuilder str)</span> &#123;</span><br><span class="line">        <span class="type">StringBuilder</span> <span class="variable">str2</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">StringBuilder</span>(<span class="string">&quot;lisi&quot;</span>);</span><br><span class="line">        System.out.println(<span class="string">&quot;pass: &quot;</span> +  str);</span><br><span class="line">        str.append(str2);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
 
 <p>其实到这里就很明显了，形参str就是传入参数str的复制值，二者引用的是堆中的同一个对象，所以可以通过改变指向的对象的值来进行一些属性值的改变，但是无法通过形参改变原参数的值，大概像下面这样。</p>
 <h2 id="类加载机制"><a href="#类加载机制" class="headerlink" title="类加载机制"></a>类加载机制</h2><h3 id="类加载过程"><a href="#类加载过程" class="headerlink" title="类加载过程"></a>类加载过程</h3><ol>
@@ -215,7 +538,7 @@
 <h4 id="类的显式加载和隐式加载"><a href="#类的显式加载和隐式加载" class="headerlink" title="类的显式加载和隐式加载"></a>类的显式加载和隐式加载</h4><p>class文件的显式加载与隐式加载的方式是指JVM加载class文件到内存的方式。</p>
 <ul>
 <li><p>显式加载：指的是在代码中通过调用ClassLoader加载class对象，如直接使用</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">CLass.forName(name)或this.getClass().getClassLoader.loadClass()</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">CLass.forName(name)或this.getClass().getClassLoader.loadClass()</span><br></pre></td></tr></table></figure>
 
 <p>加载class对象</p>
 </li>
@@ -371,7 +694,7 @@
 <h5 id="Java中，栈的大小通过什么参数来设置"><a href="#Java中，栈的大小通过什么参数来设置" class="headerlink" title="Java中，栈的大小通过什么参数来设置"></a>Java中，栈的大小通过什么参数来设置</h5><p>在Java中，每一个线程的栈大小是通过JVM启动参数来设置的。</p>
 <p>你可以使用<code>-Xss</code>参数来设置每个线程的栈大小。比如，你可以设置<code>-Xss1m</code>来将栈大小设置为1M（1MB）。</p>
 <p>以下是具体例子：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">java -Xss1m ClassName</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">java -Xss1m ClassName</span><br></pre></td></tr></table></figure>
 
 <p>上述命令将为运行的Java程序中的每个线程分配1MB的栈空间。</p>
 <p>需要注意的是，不同平台的JVM实现对<code>-Xss</code>参数的默认值可能不同。在某些情况下，如果设置一个太大或太小的值可能会导致OutOfMemoryError或者其他内存相关的错误。因此，需要根据具体的应用场景和硬件环境进行适当的设置。</p>
@@ -684,14 +1007,116 @@
 <h5 id="使用Clone（）"><a href="#使用Clone（）" class="headerlink" title="使用Clone（）"></a>使用Clone（）</h5><p>不调用任何构造器，当前类需要实现Cloneable接口，实现clone，默认浅拷贝</p>
 <h5 id="使用反序列化"><a href="#使用反序列化" class="headerlink" title="使用反序列化"></a>使用反序列化</h5><p>从文件、数据库、网络中获取一个对象的二进制流，反序列化为内存中的对象</p>
 <h5 id="第三方库Objenesis"><a href="#第三方库Objenesis" class="headerlink" title="第三方库Objenesis"></a>第三方库Objenesis</h5><p>利用了asm字节码技术，动态生成Constructor对象</p>
-<h4 id="创建对象的步骤"><a href="#创建对象的步骤" class="headerlink" title="创建对象的步骤"></a>创建对象的步骤</h4>]]></content>
-      <categories>
-        <category>Java</category>
-        <category>JVM</category>
-      </categories>
-      <tags>
-        <tag>Java</tag>
-        <tag>JVM</tag>
-      </tags>
-  </entry>
-</search>
+<h4 id="创建对象的步骤"><a href="#创建对象的步骤" class="headerlink" title="创建对象的步骤"></a>创建对象的步骤</h4>
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Java/" rel="tag"># Java</a>
+              <a href="/tags/JVM/" rel="tag"># JVM</a>
+          </div>
+
+        
+
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2024</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">baiyina</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">22k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">39 分钟</span>
+  </span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/sidebar.js"></script><script src="/js/next-boot.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.1/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+</body>
+</html>

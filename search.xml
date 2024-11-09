@@ -7,7 +7,7 @@
 <span id="more"></span>
 
 <h2 id="字节码"><a href="#字节码" class="headerlink" title="字节码"></a>字节码</h2><h4 id="字节码文件里是什么"><a href="#字节码文件里是什么" class="headerlink" title="字节码文件里是什么"></a>字节码文件里是什么</h4><p>源代码经过编译器编译就会生成字节码文件class，字节码文件是一种二进制的类文件，它的内容是JVM的指令，不是像c语言由编译器直接生成机器码。</p>
-<h3 id="生成字节码的编译器"><a href="#生成字节码的编译器" class="headerlink" title="生成字节码的编译器"></a>生成字节码的编译器</h3><p><img src="D:\大二（23.7）\JavaSE浅学\图片\202403120010996.png" alt="image-20240312000940738"></p>
+<h3 id="生成字节码的编译器"><a href="#生成字节码的编译器" class="headerlink" title="生成字节码的编译器"></a>生成字节码的编译器</h3><p><img src="https://raw.githubusercontent.com/baiyina/baiyina.github.image/main/img/202403120010996.png" alt="image-20240312000940738"></p>
 <p>javac就是一个全量的前端编译器</p>
 <p>前端编译器的主要任务就是负责将符合java语法规范的Java代码转换成符合JVM规范的字节码文件</p>
 <p>前端编译器不涉及编译优化，这些具体的细节会交给HotSpot的JIT编译器。</p>
@@ -31,7 +31,7 @@
 </li>
 </ol>
 <h3 id="什么是字节码指令"><a href="#什么是字节码指令" class="headerlink" title="什么是字节码指令"></a>什么是字节码指令</h3><p>Java虚拟机指令有一个字节长度的、代表着某种特定操作含义的操作码以及跟随其后的灵芝多个代表此操作所需参数的操作数所构成，虚拟机中的许多指令并不包含操作数，只有一个操作码。</p>
-<p><img src="D:\大二（23.7）\JavaSE浅学\图片\202403120021587.png" alt="image-20240312002152709"></p>
+<p><img src="https://raw.githubusercontent.com/baiyina/baiyina.github.image/main/img/202403120021587.png" alt="image-20240312002152709"></p>
 <h2 id="Class文件结构"><a href="#Class文件结构" class="headerlink" title="Class文件结构"></a>Class文件结构</h2><ul>
 <li>魔数</li>
 <li>Class文件版本</li>
@@ -80,8 +80,8 @@
 <p>Java代码子进行Javac编译的时候，并不像C和C++一样有“连接”这一步骤，而是在虚拟机中加载Class文件地时候进行动态链接。也就是说，在Class文件中不会保存各个方法、字段的最终内存布局信息，因此这新字段、方法的符号引用不经过运行期转换的话无法得到真正的内存入口地址，也就无法被虚拟机使用。当虚拟机运行时，需要从常量池中获得对应的符号引用，再在类创建的时候或运行时解析、翻译到具体的内存地址之中</p>
 <p>虚拟机在加载Class文件时才会进行动态链接，也就是说，Class文件中不会保存各个方法和字段的最终内存布局信息，因此，这些字段和方法的符号引用不经过转换是无法直接被虚拟机使用的。当虚拟机运行时，需要从常量池中获得相应的符号引用，再在类加载的过i城中解析阶段将其替换为直接引用，并翻译到具体的内存地址中。</p>
 <h2 id="面试题"><a href="#面试题" class="headerlink" title="面试题"></a>面试题</h2><h3 id="Java虚拟机中，数据类型可以分为哪几类？"><a href="#Java虚拟机中，数据类型可以分为哪几类？" class="headerlink" title="Java虚拟机中，数据类型可以分为哪几类？"></a>Java虚拟机中，数据类型可以分为哪几类？</h3><p>Java虚拟机是通过某些数据类型来执行计算的，数据类型可以分为两种，基本类型和引用类型，基本类型的变量持有原始值，而引用类型的变量持有引用值。</p>
-<p><img src="D:\大二（23.7）\JavaSE浅学\图片\202403151159175.png" alt="image-20240315115906865"></p>
-<p><strong>Java语言中的所有基本类型同样也都是Java虚拟机中的基本类型</strong>，但是boolean有些特别，虽然Java虚拟机也把boolean看做基本类型，但是<strong>指令集对boolean只有很有限的支持，当编译器把Java源代码编译为字节码时，他会用int或者byte来表示boolean</strong>。在Java虚拟机中，false是由整数零来表示的，所有非零整数多表示true，<strong>涉及boolean值的操作则会使用in</strong>t，另外，<strong>boolean数组是当作byte数组</strong>来访问的。<img src="D:\大二（23.7）\JavaSE浅学\图片\202403200942780-173116863715942.png" alt="image-20240315151816696">_w指令需要使用到的，它的<strong>值是JVM指令的操作码的指针</strong>。returnAddress不是简单意义上的数值，<strong>不属于任何一种基本类型，并且它的值是不能被永兴中的程序所修改的。</strong></p>
+<p><img src="https://raw.githubusercontent.com/baiyina/baiyina.github.image/main/img/202403151159175.png" alt="image-20240315115906865"></p>
+<p><strong>Java语言中的所有基本类型同样也都是Java虚拟机中的基本类型</strong>，但是boolean有些特别，虽然Java虚拟机也把boolean看做基本类型，但是<strong>指令集对boolean只有很有限的支持，当编译器把Java源代码编译为字节码时，他会用int或者byte来表示boolean</strong>。在Java虚拟机中，false是由整数零来表示的，所有非零整数多表示true，<strong>涉及boolean值的操作则会使用in</strong>t，另外，<strong>boolean数组是当作byte数组</strong>来访问的。<img src="https://raw.githubusercontent.com/baiyina/baiyina.github.image/main/img/202403200942780.png" alt="image-20240315151816696">_w指令需要使用到的，它的<strong>值是JVM指令的操作码的指针</strong>。returnAddress不是简单意义上的数值，<strong>不属于任何一种基本类型，并且它的值是不能被永兴中的程序所修改的。</strong></p>
 <p><strong>Java虚拟机的引用类型同称为“引用”</strong>，有三种引用类型：<strong>类类型，接口类型、以及数组类型</strong>，他们的值都是<strong>对动态创建对象的引用</strong>。<strong>类类型的值是对类实例的引用</strong>；<strong>数组类型的值是对数组对象的引用</strong>，在Java虚拟机中，数组是个真正的对象；而<strong>接口类型的值，则是对实现类该接口的某个类实例的引用</strong>。还有一种特殊的<strong>引用值是null，他表示该引用变量没有引用任何对象</strong>。</p>
 <h3 id="为什么不把基本类型放堆中？"><a href="#为什么不把基本类型放堆中？" class="headerlink" title="为什么不把基本类型放堆中？"></a>为什么不把基本类型放堆中？</h3><p>首先是堆和栈的特点不同，堆比栈大，但是<strong>栈比堆的运算速度要快</strong></p>
 <p><strong>将复杂数据类型放在堆中的目的是为了不影响栈的效率，而是通过引用的方式去堆中查找，八大基本类型的大小创建的时候已经确立，三大引用类型创建时无法  确定大小</strong></p>
@@ -114,7 +114,7 @@
 <li>类的Using（使用）</li>
 <li>类的unloading（卸载）</li>
 </ol>
-<p><img src="D:\大二（23.7）\JavaSE浅学\图片\202403170903172.png" alt="image-20240317090348592"></p>
+<p><img src="https://raw.githubusercontent.com/baiyina/baiyina.github.image/main/img/202403170903172.png" alt="image-20240317090348592"></p>
 <p>按照Java虚拟机规范，从class文件到加载到内存中的类，到类写在出内存为止，它的整个生命周期包括如上7阶段。</p>
 <h4 id="加载"><a href="#加载" class="headerlink" title="加载"></a>加载</h4><p>一个类只能由一个类的加载器加载一次，但可以使用其他的类的加载器重新加载，实现类的隔离。</p>
 <h4 id="loading（装载）"><a href="#loading（装载）" class="headerlink" title="loading（装载）"></a>loading（装载）</h4><p>将Java类的二进制文件加载到机器内存中，并在内存中构建出Java类的原型——类模板对象。</p>
@@ -141,7 +141,7 @@
 </ul>
 <p>在获取到类的二进制信息后，Java虚拟机就会处理这些数据，并最终祝你各位一个java.lang.Class的实例</p>
 <p>如果输入数据不是ClassFile的结构，则会抛出ClassRoematError。</p>
-<h5 id="Class实例的位置在哪"><a href="#Class实例的位置在哪" class="headerlink" title="Class实例的位置在哪"></a>Class实例的位置在哪</h5><p><img src="D:\大二（23.7）\JavaSE浅学\图片\202403170936348.png" alt="image-20240317093632139"></p>
+<h5 id="Class实例的位置在哪"><a href="#Class实例的位置在哪" class="headerlink" title="Class实例的位置在哪"></a>Class实例的位置在哪</h5><p><img src="https://raw.githubusercontent.com/baiyina/baiyina.github.image/main/img/202403170936348.png" alt="image-20240317093632139"></p>
 <p>注：Class类的构造方法是私有的，只有JVM可以创建，java.lang.Class实例是访问类型元数据的接口，也是实现反射的关键数据、入口。通过Class类提供的接口，可以获得目标类关联的.class文件中具体的数据结构：方法、字段等信息。</p>
 <h5 id="数组类的加载"><a href="#数组类的加载" class="headerlink" title="数组类的加载"></a>数组类的加载</h5><p>数组类本身并不是有类加载器负责创建的，而是由JVM在运行时根据需要直接创建的，加载器只加载数组的元素类型。</p>
 <ol>
@@ -150,7 +150,7 @@
 <li>如果数组的元素类型是引用类型，数组类的可访问性就有元素类型的可访问性决定。否则数组类的可访问性将被缺省定义为public。</li>
 </ol>
 <h4 id="Linking-链接"><a href="#Linking-链接" class="headerlink" title="Linking 链接"></a>Linking 链接</h4><h5 id="验证-Verification"><a href="#验证-Verification" class="headerlink" title="验证 Verification"></a>验证 Verification</h5><p>验证格式、语义检查、字节码验证、符号引用验证。</p>
-<p><img src="D:\大二（23.7）\JavaSE浅学\图片\202403171054423.png" alt="image-20240317105402818"></p>
+<p><img src="https://raw.githubusercontent.com/baiyina/baiyina.github.image/main/img/202403171054423.png" alt="image-20240317105402818"></p>
 <h5 id="准备-Preparation"><a href="#准备-Preparation" class="headerlink" title="准备 Preparation"></a>准备 Preparation</h5><p>简言之，为<strong>类的静态变量分配内存</strong>，并将其<strong>初始化为默认值</strong>。</p>
 <p>在这个阶段，虚拟机就会为这个类分配相应的内存空间，并设置默认初始值。</p>
 <p><strong>注</strong>：</p>
@@ -193,7 +193,7 @@
 </ol>
 <h4 id="Unloading-卸载"><a href="#Unloading-卸载" class="headerlink" title="Unloading 卸载"></a>Unloading 卸载</h4><h5 id="类、类的加载器、类的实例之间的关系"><a href="#类、类的加载器、类的实例之间的关系" class="headerlink" title="类、类的加载器、类的实例之间的关系"></a>类、类的加载器、类的实例之间的关系</h5><p>在类的加载器的内部实现中，用一个人Java集合来存放所加载类的引用。另一方面，一个Class对象总是会引用它的类加载器，调用Class对象的getClassLoader方法，就能获得它的类加载器。由此可见，待变某个类的Class实例预期类的加载器之间为双向关联关系。</p>
 <p>一个类的实例总是引用还表这个类的Class对象。在Object类中定义了getClass()方法，这个方法返回代表对象所属类的Class 对象的引用。此外，所有的Java类都有一个静态属性class，它引用代表这个类的Class对象。</p>
-<p><img src="D:\大二（23.7）\JavaSE浅学\图片\202403200942146.png" alt="image-20240320094157209"></p>
+<p><img src="https://raw.githubusercontent.com/baiyina/baiyina.github.image/main/img/202403200942146.png" alt="image-20240320094157209"></p>
 <h5 id="什么情况下类会被卸载"><a href="#什么情况下类会被卸载" class="headerlink" title="什么情况下类会被卸载"></a>什么情况下类会被卸载</h5><p>当一个类被加载、连接和初始化之后，它的生命周期就开始了。当代表类的Class对象不再被引用，即不可触及时，Class对象就会结束生命周期，Sample类在方法区内的数据也会被卸载，从而结束类的生命周期。</p>
 <h5 id="类卸载在实际生产中的情况"><a href="#类卸载在实际生产中的情况" class="headerlink" title="类卸载在实际生产中的情况"></a>类卸载在实际生产中的情况</h5><ul>
 <li>启动类加载器加载的类型在整个运行期间是不可能被卸载的</li>
@@ -210,7 +210,7 @@
 <li>该类对应的Class对象没有在任何地方被引用，无法在任何地方通过反射访问该类的方法。</li>
 </ul>
 <p>Java虚拟机被允许对满足上述三个条件的无用类进行回收，这里说的仅仅是被允许，而并不是和对象一样，没有了引用就必然会回收。</p>
-<h3 id="类加载器"><a href="#类加载器" class="headerlink" title="类加载器"></a>类加载器</h3><p><img src="D:\大二（23.7）\JavaSE浅学\图片\202403201340054.png" alt="image-20240320134006047"></p>
+<h3 id="类加载器"><a href="#类加载器" class="headerlink" title="类加载器"></a>类加载器</h3><p><img src="https://raw.githubusercontent.com/baiyina/baiyina.github.image/main/img/202403201340054.png" alt="image-20240320134006047"></p>
 <h4 id="作用"><a href="#作用" class="headerlink" title="作用"></a>作用</h4><p>类加载器是JVM执行类加载机制的前提。</p>
 <h5 id="ClassLoader的作用"><a href="#ClassLoader的作用" class="headerlink" title="ClassLoader的作用"></a>ClassLoader的作用</h5><p>ClassLoader是Java的信心组件，<strong>所有的Class都是由ClassLoader进行加载的</strong>。</p>
 <p>ClassLoader负责通过各种方式将Class信息的二进制数据读入JVM内部，转换为一个与目标类对用的java.lang.Class对象实例。然后交给Java虚拟机进行连接、初始化等操作。</p>
@@ -246,7 +246,7 @@
 <li><strong>单一性</strong>：<strong>由于父加载器的类型对于子加载器是可见的，所以父加载器中加载过的类型，就不会在子加载器中重复加载</strong>。但是注意，<strong>类加载器“邻居”之间，同一类型仍然可以被加载多次，因为互相并不可见。</strong></li>
 </ul>
 <h4 id="双亲委派模型"><a href="#双亲委派模型" class="headerlink" title="双亲委派模型"></a>双亲委派模型</h4><p>双亲委派模型是Java类加载器在加载类时遵循的一个核心原则。这种模型规定，<strong>每当一个类加载器收到加载请求时</strong>，它首先不会自己去尝试加载这个类，而是<strong>把请求委派到父类加载器去完成</strong>。每一层类加载器都是如此，除非<strong>父加载器在其搜索范围内找不到对应的类，或者明确反馈没有父加载器，子加载器自己才会尝试去加载。</strong></p>
-<p><img src="D:\大二（23.7）\JavaSE浅学\图片\202403211045799.png" alt="image-20240321104536911"></p>
+<p><img src="https://raw.githubusercontent.com/baiyina/baiyina.github.image/main/img/202403211045799.png" alt="image-20240321104536911"></p>
 <p>具体来说，双亲委派模型的工作过程如下;</p>
 <ol>
 <li><strong>若一个类加载器收到了类加载的请求，他爱首先不会自己区尝试加载这个类，而是把这个请求委派给父加载器。</strong></li>
@@ -258,7 +258,7 @@
 <p>这种机制涉及的主要目的是为<strong>了保护Java的核心API不会被外部篡改和污染</strong>，并且**确保了Java类的唯一性通过网络下载的一个类并不会替换掉系统内部预定义的类。具有亲子关系的类加载器可以共享已经加载过的类，这种方式可以有效地节省资源，提高效率。</p>
 <h3 id="类加载器的分类和测试"><a href="#类加载器的分类和测试" class="headerlink" title="类加载器的分类和测试"></a>类加载器的分类和测试</h3><h4 id="类加载器的分类说明"><a href="#类加载器的分类说明" class="headerlink" title="类加载器的分类说明"></a>类加载器的分类说明</h4><p>JVM支持两种类型的类加载器，分别为引导类加载器和自定义类加载器。</p>
 <p>从概念上来讲，自定义类加载器一般指的是程序中有开发人员自定义的一类类加载器，但是Java虚拟机规范却没有这么定义，而是将所有派生于抽象类ClassLoader 的类加载器都划分为自定义加载器。</p>
-<p><img src="D:\大二（23.7）\JavaSE浅学\图片\202403201530865.png" alt="image-20240320153035315"></p>
+<p><img src="https://raw.githubusercontent.com/baiyina/baiyina.github.image/main/img/202403201530865.png" alt="image-20240320153035315"></p>
 <p>启动类加载器是使用c或c++语言编写的。</p>
 <h4 id="子父类加载器的关系"><a href="#子父类加载器的关系" class="headerlink" title="子父类加载器的关系"></a>子父类加载器的关系</h4><ul>
 <li>处了顶层的启动类加载器外，其余的类加载器都应当有自己的父类加载器。</li>
@@ -294,7 +294,7 @@
 <li>同时，<strong>自定义加载器能够实现应用隔离</strong>，例如Tomcat、Spring等中间件和组件框架都再内部实现类自定义的加载器，并<strong>通过自定义加载器隔离不同的组件模块</strong>。这种机制比C&#x2F;C++程序要好太多，想不修改C&#x2F;C+++程序就能为其新增功能，几乎是不可能的，仅仅一个兼容性就可以挡住所有美好的设想</li>
 <li>所有用户自定义类加载器通常需要继承于抽象类java.lang.classloader</li>
 </ul>
-<h3 id="ClassLoader源码剖析"><a href="#ClassLoader源码剖析" class="headerlink" title="ClassLoader源码剖析"></a>ClassLoader源码剖析</h3><h4 id="类加载器的分类说明-1"><a href="#类加载器的分类说明-1" class="headerlink" title="类加载器的分类说明"></a>类加载器的分类说明</h4><p><img src="D:\大二（23.7）\JavaSE浅学\图片\202403211040517.png" alt="image-20240321104016859"></p>
+<h3 id="ClassLoader源码剖析"><a href="#ClassLoader源码剖析" class="headerlink" title="ClassLoader源码剖析"></a>ClassLoader源码剖析</h3><h4 id="类加载器的分类说明-1"><a href="#类加载器的分类说明-1" class="headerlink" title="类加载器的分类说明"></a>类加载器的分类说明</h4><p><img src="https://raw.githubusercontent.com/baiyina/baiyina.github.image/main/img/202403211040517.png" alt="image-20240321104016859"></p>
 <h3 id="自定义类的加载器"><a href="#自定义类的加载器" class="headerlink" title="自定义类的加载器"></a>自定义类的加载器</h3><ul>
 <li><p><strong>隔离加载类</strong></p>
 <p>在某些框架内进行中间件与应用的模块隔离，把类加载到不同的环境。比如，阿里某容器看框架通过自定义加载器确保应用中依赖的jar包不会影响到中间件运行时使用的jar包。再比如：Tomcat这类Web应用服务器，内部自定义了好几种类加载器，用于隔离同一个Web应用服务器上的不同应用程序。</p>
@@ -309,9 +309,9 @@
 <p>Java代码容易被编译和篡改，可以进行编译加密。那么类加载也需要自定义，还原加密的字节码。</p>
 </li>
 </ul>
-<h3 id="双亲委派机制"><a href="#双亲委派机制" class="headerlink" title="双亲委派机制"></a>双亲委派机制</h3><p><img src="D:\大二（23.7）\JavaSE浅学\图片\202403211256629.png" alt="image-20240321125645973"></p>
+<h3 id="双亲委派机制"><a href="#双亲委派机制" class="headerlink" title="双亲委派机制"></a>双亲委派机制</h3><p><img src="https://raw.githubusercontent.com/baiyina/baiyina.github.image/main/img/202403211256629.png" alt="image-20240321125645973"></p>
 <p>定义</p>
-<p><img src="D:\大二（23.7）\JavaSE浅学\图片\202403211257951.png" alt="image-20240321125756923"></p>
+<p><img src="https://raw.githubusercontent.com/baiyina/baiyina.github.image/main/img/202403211257951.png" alt="image-20240321125756923"></p>
 <h4 id="源码分析"><a href="#源码分析" class="headerlink" title="源码分析"></a>源码分析</h4><p>双亲委派机制在<code>java.lang .ClassLoader.loadClass(String,boolean)</code>接口中体现，该接口的逻辑如下：</p>
 <ol>
 <li>先在当前加载器的缓存中查找有无目标类，如果有，直接返回</li>
@@ -334,15 +334,15 @@
 <p>基础类型之所以被称为基础，是因为它们总是作为被用户代码继承、调用的API存在，但程序设计往往没有绝对不变得完美规则，如果有基础类型又要调回用户的代码，那该怎么办呢。</p>
 <p>JDNI服务就是一个例子，它的代码由启动类加载器来完成加载，属于基础类型类，但JNDI存在的目的就是对资源进行查找和集中管理，它需要调用其他厂商实现并部署在应用程序的ClassPath下的JNDI服务提供者接口的代码，现在的问题是启动类加载器是不可能认识并加载这些代码的，那该怎么办？</p>
 <p>稳了解决这个问题，Java设计团队引入了一个不太优雅的设计：<strong>线程上下文类加载器</strong>，这个类加载器可以通过<code>java.lang.Thread</code>类的<code>setContextClassLoader()</code>方法进行设置，如果创建线程是还未设置，他将会从父线程中继承一个，如果在应用程序的全局范围内都没有设置过的话，那这个类加载器默认就是应用程序类加载器。</p>
-<p><img src="D:\大二（23.7）\JavaSE浅学\图片\202403211449217.png"></p>
+<p><img src="https://raw.githubusercontent.com/baiyina/baiyina.github.image/main/img/202403211449217.png"></p>
 <h5 id="第三次"><a href="#第三次" class="headerlink" title="第三次"></a>第三次</h5><p><strong>代码热替换和模块热部署</strong></p>
 <p>IBM公司主导的JSR-291 即OSGI 实现模块化热部署的关键是他自定义的类加载机制的实现，每一个程序模块都有一个自己的类加载器，当需要更换一个Bundle的时候，就把Bundle联通类加载器一起换掉以实现代码的热替换。在OSGI环境下，类加载器不在双亲委派模型推荐的树状结构，而是进一步发展为更加复杂的网状结构。</p>
 <p>当收到类加载请求时，OSGI将按照下面的顺序进行类搜索：</p>
-<p><img src="D:\大二（23.7）\JavaSE浅学\图片\202403211453112.png" alt="image-20240321145354875"></p>
-<h2 id="运行时内存"><a href="#运行时内存" class="headerlink" title="运行时内存"></a>运行时内存</h2><p><img src="D:\大二（23.7）\JavaSE浅学\图片\202403211511295.png" alt="image-20240321151155101"></p>
-<img src="D:\大二（23.7）\JavaSE浅学\图片\202403211518821.png" alt="image-20240321151810625" style="zoom: 200%;" />
+<p><img src="https://raw.githubusercontent.com/baiyina/baiyina.github.image/main/img/202403211453112.png" alt="image-20240321145354875"></p>
+<h2 id="运行时内存"><a href="#运行时内存" class="headerlink" title="运行时内存"></a>运行时内存</h2><p><img src="https://raw.githubusercontent.com/baiyina/baiyina.github.image/main/img/202403211511295.png" alt="image-20240321151155101"></p>
+<img src="https://raw.githubusercontent.com/baiyina/baiyina.github.image/main/img/202403211518821.png" alt="image-20240321151810625" style="zoom: 200%;" />
 
-<h3 id="程序计数器"><a href="#程序计数器" class="headerlink" title="程序计数器"></a>程序计数器</h3><img src="D:\大二（23.7）\JavaSE浅学\图片\202403211524465.png" alt="image-20240321152422044" style="zoom:200%;" />
+<h3 id="程序计数器"><a href="#程序计数器" class="headerlink" title="程序计数器"></a>程序计数器</h3><img src="https://raw.githubusercontent.com/baiyina/baiyina.github.image/main/img/202403211524465.png" alt="image-20240321152422044" style="zoom:200%;" />
 
 <p>为什么需要它</p>
 <ul>
@@ -356,9 +356,9 @@
 <li>它是程序控制流的指示器，分支、循环、跳转、异常处理、线程恢复等基础功能都需要以来这个计数器来完成。</li>
 <li>PC寄存器用来存储指向下一条指令的的地址，也即将要执行的指令代码。执行引擎的字节码解释器工作时就是通过改变</li>
 </ul>
-<h3 id="虚拟机栈"><a href="#虚拟机栈" class="headerlink" title="虚拟机栈"></a>虚拟机栈</h3><p><img src="D:\大二（23.7）\JavaSE浅学\图片\202403230926137.png" alt="image-20240323092559446"></p>
+<h3 id="虚拟机栈"><a href="#虚拟机栈" class="headerlink" title="虚拟机栈"></a>虚拟机栈</h3><p><img src="https://raw.githubusercontent.com/baiyina/baiyina.github.image/main/img/202403230926137.png" alt="image-20240323092559446"></p>
 <p> <strong>栈比堆快，堆比栈大。</strong></p>
-<h4 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h4><h5 id="如何理解栈管运行，堆管存储"><a href="#如何理解栈管运行，堆管存储" class="headerlink" title="如何理解栈管运行，堆管存储"></a>如何理解栈管运行，堆管存储</h5><p><img src="D:\大二（23.7）\JavaSE浅学\图片\202403231618416.png" alt="image-20240323161815437"></p>
+<h4 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h4><h5 id="如何理解栈管运行，堆管存储"><a href="#如何理解栈管运行，堆管存储" class="headerlink" title="如何理解栈管运行，堆管存储"></a>如何理解栈管运行，堆管存储</h5><p><img src="https://raw.githubusercontent.com/baiyina/baiyina.github.image/main/img/202403231618416.png" alt="image-20240323161815437"></p>
 <h5 id="栈中存在GC吗"><a href="#栈中存在GC吗" class="headerlink" title="栈中存在GC吗"></a>栈中存在GC吗</h5><p>不存在，但存在OOM溢出。</p>
 <h5 id="栈会爆出什么异常"><a href="#栈会爆出什么异常" class="headerlink" title="栈会爆出什么异常"></a>栈会爆出什么异常</h5><ul>
 <li>Java虚拟机规范中允许<strong>Java栈的大小是动态的或者是固定不变的</strong>。<ul>
@@ -386,8 +386,8 @@
 <li>在这个线程上正在执行的每个方法都各自对应一个栈帧</li>
 <li>栈帧是一个内存区块，是一个数据集，维系着方法执行过程中的各种数据信息。</li>
 </ul>
-<p><img src="D:\大二（23.7）\JavaSE浅学\图片\202403231609671-173116863715944.png" alt="image-20240323160927575"></p>
-<p><img src="D:\大二（23.7）\JavaSE浅学\图片\202403231610941.png" alt="image-20240323160959901"></p>
+<p><img src="https://raw.githubusercontent.com/baiyina/baiyina.github.image/main/img/202403231609671.png" alt="image-20240323160927575"></p>
+<p><img src="https://raw.githubusercontent.com/baiyina/baiyina.github.image/main/img/202403231610941.png" alt="image-20240323160959901"></p>
 <p>在一条活动线程中，一个时间点上，只会有一个活动的栈帧。即只有当前正在执行的方法的栈帧时有效的，这个栈帧被称为当前栈帧，与当前栈帧相对应的方法就是当前方法，定义这个方法的类就是当前类。</p>
 <p>如果在该方法中调用了其他方法，对应的新的栈帧会被创建出来，放在站的顶端，称为新的当前帧。</p>
 <p>执行引擎运行的所有字节码指令只针对当前栈帧进行操作。</p>
@@ -409,7 +409,7 @@
 <li>方法返回地址（或方法正常退出或者异常退出的定义）</li>
 <li>一些附加信息</li>
 </ul>
-<p><img src="D:\大二（23.7）\JavaSE浅学\图片\202403231631020.png" alt="image-20240323163140973"></p>
+<p><img src="https://raw.githubusercontent.com/baiyina/baiyina.github.image/main/img/202403231631020.png" alt="image-20240323163140973"></p>
 <h5 id="局部变量表"><a href="#局部变量表" class="headerlink" title="局部变量表"></a>局部变量表</h5><ul>
 <li>局部变量表也被称之为局部变量数组或本地变量表</li>
 <li>定义为一个数字数组，主要用于<strong>存储方法参数和定义在方法体内的局部变量</strong>，这些数据类型包括基本数据类型、对象引用、以及returnAdress类型</li>
@@ -423,7 +423,7 @@
 <li>和类变量初始化不同的是，局部变量表不存在系统初始化的过程，这意味着<strong>一旦定义了局部变量则必须人为初始化</strong>，否则无法使用。</li>
 </ul>
 <h6 id="GC-Roots"><a href="#GC-Roots" class="headerlink" title="GC Roots"></a>GC Roots</h6><p>局部变量表中的变量也是重要的垃圾回收根节点，只要被局部变量表中直接或间接引用的对象都不会被回收。</p>
-<p><img src="D:\大二（23.7）\JavaSE浅学\图片\202403231914792.png" alt="image-20240323191454073"></p>
+<p><img src="https://raw.githubusercontent.com/baiyina/baiyina.github.image/main/img/202403231914792.png" alt="image-20240323191454073"></p>
 <h6 id="Slot"><a href="#Slot" class="headerlink" title="Slot"></a>Slot</h6><p>在JVM中，<strong>Slot是局部变量表的存储单元</strong>。局部变量表是变量值存储空间，为JVM执行方法服务。</p>
 <p>其主要功能如下：</p>
 <ol>
@@ -502,9 +502,9 @@
 <p>在虚拟机调优中涉及“<strong>栈上分配技术</strong>”，这种技术就是将一些只在当前方法使用的变量直接放在栈上，运行速度快且不用GC。</p>
 <p><strong>所有的线程都共享堆？</strong></p>
 <p>所有线程共享Java堆，在这里还可以划分线程私有的缓冲区（TLAB）。</p>
-<p><img src="D:\大二（23.7）\JavaSE浅学\图片\202403251828909.png" alt="image-20240325182853127"></p>
-<h3 id="堆的内部结构"><a href="#堆的内部结构" class="headerlink" title="堆的内部结构"></a>堆的内部结构</h3><p>现代垃圾收集器大部分都基于分代手机理论设计，对空间细分为：<br><img src="D:\大二（23.7）\JavaSE浅学\图片\202403251855790.png" alt="image-20240325185523566"></p>
-<p><img src="D:\大二（23.7）\JavaSE浅学\图片\202403251857199.png" alt="image-20240325185701971"></p>
+<p><img src="https://raw.githubusercontent.com/baiyina/baiyina.github.image/main/img/202403251828909.png" alt="image-20240325182853127"></p>
+<h3 id="堆的内部结构"><a href="#堆的内部结构" class="headerlink" title="堆的内部结构"></a>堆的内部结构</h3><p>现代垃圾收集器大部分都基于分代手机理论设计，对空间细分为：<br><img src="https://raw.githubusercontent.com/baiyina/baiyina.github.image/main/img/202403251855790.png" alt="image-20240325185523566"></p>
+<p><img src="https://raw.githubusercontent.com/baiyina/baiyina.github.image/main/img/202403251857199.png" alt="image-20240325185701971"></p>
 <h4 id="年轻代和老年代"><a href="#年轻代和老年代" class="headerlink" title="年轻代和老年代"></a>年轻代和老年代</h4><ul>
 <li><p>存储在JVM中的Java对象可以被划分为两类：</p>
 <ul>
@@ -515,7 +515,7 @@
 <li><p>Java堆区进一步细分的话，可以分为年轻代和老年代</p>
 </li>
 <li><p>其中年轻代又可以划分为Eden空间、Survivor0空间和Survivor1空间（有时也成为from区和to区）</p>
-<p><img src="D:\大二（23.7）\JavaSE浅学\图片\202403251924323.png" alt="image-20240325190044777"></p>
+<p><img src="https://raw.githubusercontent.com/baiyina/baiyina.github.image/main/img/202403251924323.png" alt="image-20240325190044777"></p>
 </li>
 <li><p>几乎所有的Java对象都是在Eden区被new出来的。</p>
 </li>
@@ -536,7 +536,7 @@
 <li><p>heap默认最小值：最少不得少于8M，如果物理内存大于等于1G，那么默认值为物理内存的1&#x2F;64.最小堆内存在jvm启动的时候就会被初始化。</p>
 </li>
 </ul>
-<h4 id="新生代和老年代的比例"><a href="#新生代和老年代的比例" class="headerlink" title="新生代和老年代的比例"></a>新生代和老年代的比例</h4><p><img src="D:\大二（23.7）\JavaSE浅学\图片\202403251923096.png" alt="image-20240325192356622"></p>
+<h4 id="新生代和老年代的比例"><a href="#新生代和老年代的比例" class="headerlink" title="新生代和老年代的比例"></a>新生代和老年代的比例</h4><p><img src="https://raw.githubusercontent.com/baiyina/baiyina.github.image/main/img/202403251923096.png" alt="image-20240325192356622"></p>
 <p>默认新生代站1&#x2F;3，老年代占2&#x2F;3</p>
 <p>一般不调</p>
 <h4 id="Eden，幸存者区比例"><a href="#Eden，幸存者区比例" class="headerlink" title="Eden，幸存者区比例"></a>Eden，幸存者区比例</h4><p>8：1：1</p>
@@ -549,7 +549,7 @@
 </ul>
 </li>
 </ul>
-<p><img src="D:\大二（23.7）\JavaSE浅学\图片\202403261712182.png" alt="image-20240326171254213"></p>
+<p><img src="https://raw.githubusercontent.com/baiyina/baiyina.github.image/main/img/202403261712182.png" alt="image-20240326171254213"></p>
 <h4 id="内存分配原则"><a href="#内存分配原则" class="headerlink" title="内存分配原则"></a>内存分配原则</h4><p>针对不同年龄段的对象分配原则如下所示：</p>
 <ul>
 <li>优先分配到Eden</li>
@@ -577,7 +577,7 @@
 <li>在养老区，相对悠闲。当养老区内存不足时，再次触发GC：Major GC，进行养老区的内存清理</li>
 <li>若养老区执行了Major GC之后发现依然无法进行对象的保存，就会产生OOM异常。</li>
 </ol>
-<h3 id="详细解释Minor-GC-Major-GC-Full-GC"><a href="#详细解释Minor-GC-Major-GC-Full-GC" class="headerlink" title="详细解释Minor GC, Major GC, Full GC"></a>详细解释Minor GC, Major GC, Full GC</h3><p><img src="D:\大二（23.7）\JavaSE浅学\图片\202403261754315.png" alt="image-20240326175411623"></p>
+<h3 id="详细解释Minor-GC-Major-GC-Full-GC"><a href="#详细解释Minor-GC-Major-GC-Full-GC" class="headerlink" title="详细解释Minor GC, Major GC, Full GC"></a>详细解释Minor GC, Major GC, Full GC</h3><p><img src="https://raw.githubusercontent.com/baiyina/baiyina.github.image/main/img/202403261754315.png" alt="image-20240326175411623"></p>
 <h4 id="解释"><a href="#解释" class="headerlink" title="解释"></a>解释</h4><p>JVM再进行GC的时候，并非每次都对上面三个内存（新生代、老年代、方法区）一起回收的，大部分时候回收的都是新生代</p>
 <p>针对HotSpot VM的实现，它里面的GC按照回收区域又分为两大钟类型：</p>
 <ul>
@@ -611,7 +611,7 @@
 </ul>
 </li>
 </ul>
-<p><img src="D:\大二（23.7）\JavaSE浅学\图片\202403261808361.png" alt="image-20240326180836505"></p>
+<p><img src="https://raw.githubusercontent.com/baiyina/baiyina.github.image/main/img/202403261808361.png" alt="image-20240326180836505"></p>
 <h4 id="Major-GC"><a href="#Major-GC" class="headerlink" title="Major GC"></a>Major GC</h4><p>老年代GC触发机制：</p>
 <ul>
 <li>指发生在老年代的GC，对象从老年代消失时，我们说Major GC或Full GC发生了。<ul>
@@ -635,14 +635,14 @@
 <li>从内存模型而不是垃圾收集的角度，堆Eden区域继续进行划分，JVM为每个线程分配了一个私有缓存区域，它包含在Eden空间内</li>
 <li>基本上所有OpenJDK衍生出来的JVM都提供了TLAB的设计。</li>
 </ul>
-<p><img src="D:\大二（23.7）\JavaSE浅学\图片\202403261926363.png" alt="image-20240326192628923"></p>
-<h2 id="方法区"><a href="#方法区" class="headerlink" title="方法区"></a>方法区</h2><h4 id="栈、堆、方法区的关系"><a href="#栈、堆、方法区的关系" class="headerlink" title="栈、堆、方法区的关系"></a>栈、堆、方法区的关系</h4><p><img src="D:\大二（23.7）\JavaSE浅学\图片\202403261927932.png" alt="image-20240326192727105"></p>
-<p><img src="D:\大二（23.7）\JavaSE浅学\图片\202403261927965.png" alt="image-20240326192735177"></p>
+<p><img src="https://raw.githubusercontent.com/baiyina/baiyina.github.image/main/img/202403261926363.png" alt="image-20240326192628923"></p>
+<h2 id="方法区"><a href="#方法区" class="headerlink" title="方法区"></a>方法区</h2><h4 id="栈、堆、方法区的关系"><a href="#栈、堆、方法区的关系" class="headerlink" title="栈、堆、方法区的关系"></a>栈、堆、方法区的关系</h4><p><img src="https://raw.githubusercontent.com/baiyina/baiyina.github.image/main/img/202403261927932.png" alt="image-20240326192727105"></p>
+<p><img src="https://raw.githubusercontent.com/baiyina/baiyina.github.image/main/img/202403261927965.png" alt="image-20240326192735177"></p>
 <h3 id="方法区在哪里"><a href="#方法区在哪里" class="headerlink" title="方法区在哪里"></a>方法区在哪里</h3><p>方法区逻辑上是属于堆的一部分，但一些简单的实现可能不会选择去进行垃圾收集或者进行压缩。</p>
 <p>对于HotSpotJVM而言，方法区还有一个别名叫做非堆，目的就是要和堆分开</p>
 <p>所以，方法区看作是一块独立于Java堆的内存空间</p>
-<p><img src="D:\大二（23.7）\JavaSE浅学\图片\202403261932444.png" alt="image-20240326193220958"></p>
-<h3 id="方法区的理解"><a href="#方法区的理解" class="headerlink" title="方法区的理解"></a>方法区的理解</h3><p><img src="D:\大二（23.7）\JavaSE浅学\图片\202403261943930.png" alt="image-20240326194306558"></p>
+<p><img src="https://raw.githubusercontent.com/baiyina/baiyina.github.image/main/img/202403261932444.png" alt="image-20240326193220958"></p>
+<h3 id="方法区的理解"><a href="#方法区的理解" class="headerlink" title="方法区的理解"></a>方法区的理解</h3><p><img src="https://raw.githubusercontent.com/baiyina/baiyina.github.image/main/img/202403261943930.png" alt="image-20240326194306558"></p>
 <ul>
 <li>方法区与堆一样，是各个线程共享的内存区域。</li>
 <li>方法区在JVM启动的时候被创建，并且他的实际的物理内存空间中和Java堆区一样都可以是不连续的。</li>
@@ -654,7 +654,7 @@
 <li>在jdk7及以前，习惯上把方法区，称为永久代，jdk8开始，使用元空间取代了永久代。</li>
 <li>本质上，方法区和永久代并不等价。仅对hotspot而言的。</li>
 </ul>
-<p><img src="D:\大二（23.7）\JavaSE浅学\图片\202403261939744.png" alt="image-20240326193949788"></p>
+<p><img src="https://raw.githubusercontent.com/baiyina/baiyina.github.image/main/img/202403261939744.png" alt="image-20240326193949788"></p>
 <ul>
 <li>而到了JDK8，终于完全废弃了永久代的概念，改用了JRockit，J9一样在本地内存中实现的元空间来代替。</li>
 <li>元空间的本质和永久代类似，都是对JVM规范中方法区的实现。步过元空间与永久代最大的区别在于：元空间不在虚拟机设置的内存中，而是使用本地内存。</li>
@@ -673,10 +673,10 @@
 <li><p>对永久代进行调优是很困难的</p>
 </li>
 </ul>
-<p><img src="D:\大二（23.7）\JavaSE浅学\图片\202403261954985.png" alt="image-20240326195448291"></p>
-<p><img src="D:\大二（23.7）\JavaSE浅学\图片\202403261955908.png" alt="image-20240326195504397"></p>
-<p><img src="D:\大二（23.7）\JavaSE浅学\图片\202403261955632.png" alt="image-20240326195521097"></p>
-<p><img src="D:\大二（23.7）\JavaSE浅学\图片\202403262021178.png" alt="image-20240326202053671"></p>
+<p><img src="https://raw.githubusercontent.com/baiyina/baiyina.github.image/main/img/202403261954985.png" alt="image-20240326195448291"></p>
+<p><img src="https://raw.githubusercontent.com/baiyina/baiyina.github.image/main/img/202403261955908.png" alt="image-20240326195504397"></p>
+<p><img src="https://raw.githubusercontent.com/baiyina/baiyina.github.image/main/img/202403261955632.png" alt="image-20240326195521097"></p>
+<p><img src="https://raw.githubusercontent.com/baiyina/baiyina.github.image/main/img/202403262021178.png" alt="image-20240326202053671"></p>
 <h2 id="对象的内存布局"><a href="#对象的内存布局" class="headerlink" title="对象的内存布局"></a>对象的内存布局</h2><h3 id="对象的实例化"><a href="#对象的实例化" class="headerlink" title="对象的实例化"></a>对象的实例化</h3><h4 id="创建对象的方式"><a href="#创建对象的方式" class="headerlink" title="创建对象的方式"></a>创建对象的方式</h4><h5 id="new"><a href="#new" class="headerlink" title="new"></a>new</h5><ul>
 <li>new</li>
 <li>静态方法</li>

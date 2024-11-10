@@ -1,6 +1,412 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>Srping Web网络请求执行流程</title>
+    <url>/2023/10/15/Java/Spring/spring%20web%E7%BD%91%E7%BB%9C%E8%AF%B7%E6%B1%82%E6%89%A7%E8%A1%8C%E6%B5%81%E7%A8%8B/</url>
+    <content><![CDATA[<h1 id="Srping-Web网络请求执行流程"><a href="#Srping-Web网络请求执行流程" class="headerlink" title="Srping Web网络请求执行流程"></a>Srping Web网络请求执行流程</h1><p>在 Spring Web（通常是 Spring MVC 或 Spring Boot）中，控制器（Controller）层的路由映射是通过注解驱动的方式实现的。Spring MVC 通过扫描带有特定注解的类和方法来自动映射请求 URL 到对应的控制器方法上。</p>
+<p>以下是 Spring MVC 中控制器路由映射的工作原理概述：</p>
+<span id="more"></span>
+
+<h3 id="控制器路由映射实现原理"><a href="#控制器路由映射实现原理" class="headerlink" title="控制器路由映射实现原理"></a>控制器路由映射实现原理</h3><ol>
+<li><strong>控制器类注解</strong>：<ul>
+<li>控制器类通常会使用 <code>@Controller</code> 或 <code>@RestController</code> 注解标记。</li>
+<li>这些注解告诉 Spring MVC 这个类是一个控制器，并且应该被扫描。</li>
+</ul>
+</li>
+<li><strong>请求映射注解</strong>：<ul>
+<li>控制器方法通常会使用 <code>@RequestMapping</code> 或它的派生注解，如 <code>@GetMapping</code>, <code>@PostMapping</code>, <code>@PutMapping</code>, <code>@DeleteMapping</code> 等来指定 HTTP 请求的方法和路径。</li>
+<li>这些注解定义了方法与 URL 的映射关系。</li>
+</ul>
+</li>
+<li><strong>扫描控制器类</strong>：<ul>
+<li>Spring MVC 通过 <code>@ComponentScan</code> 或者 <code>@SpringBootApplication</code> 注解来扫描控制器类。</li>
+<li>扫描过程中，Spring MVC 会找到所有标记为控制器的类，并将它们注册为 Spring Bean。</li>
+</ul>
+</li>
+<li><strong>请求分发</strong>：<ul>
+<li>当一个 HTTP 请求到达时，Spring MVC 的前端控制器（通常是 <code>DispatcherServlet</code>）负责接收请求。</li>
+<li><code>DispatcherServlet</code> 会将请求分发给合适的控制器方法，这个过程涉及到请求 URL 的解析和匹配。</li>
+</ul>
+</li>
+<li><strong>请求映射解析</strong>：<ul>
+<li>Spring MVC 使用 <code>HandlerMapping</code> 接口的实现类来解析请求 URL 并将其映射到控制器方法上。</li>
+<li>默认情况下，Spring MVC 使用 <code>RequestMappingHandlerMapping</code> 来处理 <code>@RequestMapping</code> 注解。</li>
+</ul>
+</li>
+<li><strong>参数绑定</strong>：<ul>
+<li>Spring MVC 可以自动将请求参数绑定到控制器方法的参数上，通过使用 <code>@RequestParam</code>, <code>@PathVariable</code>, <code>@RequestBody</code>, <code>@ModelAttribute</code> 等注解。</li>
+<li>这些注解帮助将 URL 参数、表单数据、JSON 数据等映射到控制器方法的参数上。</li>
+</ul>
+</li>
+<li><strong>视图渲染</strong>：<ul>
+<li>控制器方法返回一个视图名称或模型视图对象。</li>
+<li><code>DispatcherServlet</code> 将视图名称交给视图解析器来查找实际的视图，并渲染视图。</li>
+</ul>
+</li>
+</ol>
+<h3 id="检测控制器路由映射"><a href="#检测控制器路由映射" class="headerlink" title="检测控制器路由映射"></a>检测控制器路由映射</h3><p>如果您想要检测控制器层的路由映射，有几种方法可以实现：</p>
+<ol>
+<li><p>**使用 <code>RequestMappingHandlerMapping</code>**：</p>
+<ul>
+<li>您可以通过注入 <code>RequestMappingHandlerMapping</code> 并从中获取已注册的映射信息。</li>
+<li>这样可以得到所有控制器方法的映射信息。</li>
+</ul>
+</li>
+<li><p><strong>使用 Swagger</strong>：</p>
+<ul>
+<li>如果您使用了 Swagger 来生成 API 文档，Swagger 会自动检测控制器层的路由映射，并在文档中列出。</li>
+<li>Swagger 通过读取控制器类和方法上的注解来生成 API 文档。</li>
+</ul>
+</li>
+<li><p><strong>编写单元测试</strong>：</p>
+<ul>
+<li>您可以编写单元测试来模拟 HTTP 请求，并验证控制器方法是否被正确调用。</li>
+<li>使用 JUnit 和 Mockito 等工具可以轻松地编写这样的测试。</li>
+</ul>
+</li>
+<li><p><strong>输出映射信息</strong>：</p>
+<ul>
+<li>在启动时，您可以配置 Spring Boot 来输出所有控制器的映射信息。</li>
+<li>例如，通过在启动类中添加以下代码来输出所有控制器方法的映射信息：</li>
+</ul>
+<p>Java深色版本</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">1import org.springframework.boot.SpringApplication;</span><br><span class="line">2import org.springframework.boot.autoconfigure.SpringBootApplication;</span><br><span class="line">3import org.springframework.context.ApplicationContext;</span><br><span class="line">4import org.springframework.web.servlet.handler.HandlerMappingIntrospector;</span><br><span class="line">5</span><br><span class="line">6@SpringBootApplication</span><br><span class="line">7public class Application &#123;</span><br><span class="line">8</span><br><span class="line">9    public static void main(String[] args) &#123;</span><br><span class="line">10        ApplicationContext context = SpringApplication.run(Application.class, args);</span><br><span class="line">11        HandlerMappingIntrospector introspector = context.getBean(HandlerMappingIntrospector.class);</span><br><span class="line">12        // 输出所有控制器方法的映射信息</span><br><span class="line">13        introspector.getHandlerMethods().forEach((beanName, handlerMethods) -&gt; &#123;</span><br><span class="line">14            handlerMethods.forEach(handlerMethod -&gt; &#123;</span><br><span class="line">15                System.out.println(&quot;Handler Method: &quot; + handlerMethod.getBeanType().getSimpleName() + &quot;#&quot; + handlerMethod.getMethod().getName());</span><br><span class="line">16                System.out.println(&quot;Path: &quot; + handlerMethod.getMethodAnnotation(RequestMapping.class).value());</span><br><span class="line">17            &#125;);</span><br><span class="line">18        &#125;);</span><br><span class="line">19    &#125;</span><br><span class="line">20&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这段代码会输出所有控制器方法的名称以及它们的映射路径。</p>
+</li>
+</ol>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>Spring MVC 使用注解驱动的方式来自动映射请求 URL 到控制器方法上。您可以使用多种方法来检测和验证控制器的路由映射，包括通过 Spring 的内置功能、第三方工具（如 Swagger）、以及编写单元测试。</p>
+<p>1.Java：SpringBoot获取所有接口的路由映射关系-CSDN技术社区</p>
+<p><img src="https://raw.githubusercontent.com/baiyina/baiyina.github.image/main/img/202411101401447.jpg" alt="img"><a href="https://m.blog.csdn.net/mouday/article/details/129562308">https://m.blog.csdn.net/mouday/article/details/129562308</a></p>
+<p>2.Java Junit 单元测试controller层接口的方法-CSDN技术社区</p>
+<p><img src="https://raw.githubusercontent.com/baiyina/baiyina.github.image/main/img/202411101401447.jpg" alt="img"><a href="https://m.blog.csdn.net/qq_38425719/article/details/102504862">https://m.blog.csdn.net/qq_38425719/article/details/102504862</a></p>
+<p>3.springboot中的controller层和postman接口测试-CSDN技术社区</p>
+<p><img src="https://raw.githubusercontent.com/baiyina/baiyina.github.image/main/img/202411101359803.jpg" alt="img"><a href="https://m.blog.csdn.net/m0_46692607/article/details/123597756">https://m.blog.csdn.net/m0_46692607/article/details/123597756</a></p>
+<p>4.简化Spring(3)–Controller层-博客园</p>
+<p><img src="https://raw.githubusercontent.com/baiyina/baiyina.github.image/main/img/202411101400288.png" alt="img"><a href="https://www.cnblogs.com/earl86/archive/2008/10/31/1666508.html">https://www.cnblogs.com/earl86/archive/2008/10/31/1666508.html</a></p>
+<p>5.controller层的作用及其用法-CSDN技术社区</p>
+<p><img src="https://raw.githubusercontent.com/baiyina/baiyina.github.image/main/img/202411101400939.jpg" alt="img"><a href="https://wenku.csdn.net/answer/1whmib9pjs">https://wenku.csdn.net/answer/1whmib9pjs</a></p>
+<p>6.获取Controller层接口信息，并组装，返回前端-CSDN技术社区</p>
+<p><img src="https://raw.githubusercontent.com/baiyina/baiyina.github.image/main/img/202411101400776.jpg" alt="img"><a href="https://m.blog.csdn.net/sutingStart/article/details/139963149">https://m.blog.csdn.net/sutingStart/article/details/139963149</a></p>
+<p>7.ava Junit 单元测试controller层接口的方法-博客园</p>
+<p><img src="https://raw.githubusercontent.com/baiyina/baiyina.github.image/main/img/202411101400721.png" alt="img"><a href="https://www.cnblogs.com/cy0628/articles/15428002.html">https://www.cnblogs.com/cy0628/articles/15428002.html</a></p>
+<p>8.spring web功能的实现原理 流程图模板_ProcessOn思维导图、流程图</p>
+<p><img src="https://raw.githubusercontent.com/baiyina/baiyina.github.image/main/img/202411101400721.png" alt="img"><a href="https://www.processon.com/view/5e7b3f0ee4b01518203d84c4">https://www.processon.com/view/5e7b3f0ee4b01518203d84c4</a></p>
+<p>9.spring进行集成测试详解-CSDN技术社区</p>
+<p><img src="https://raw.githubusercontent.com/baiyina/baiyina.github.image/main/img/202411101400412.jpg" alt="img"><a href="https://m.blog.csdn.net/ledefe/article/details/7026594">https://m.blog.csdn.net/ledefe/article/details/7026594</a></p>
+<p>10.急！java：controller调用其他controller中的接口怎么实现-CSDN技术社区</p>
+<p><img src="https://raw.githubusercontent.com/baiyina/baiyina.github.image/main/img/202411101400412.jpg" alt="img"><a href="https://ask.csdn.net/questio">https://ask.csdn.net/questio</a></p>
+<p><code>DispatcherServlet</code> 是 Spring MVC 框架中的核心 Servlet，它负责处理所有的 HTTP 请求并分发这些请求到适当的控制器（Controller）。<code>DispatcherServlet</code> 在 Spring MVC 架构中扮演着至关重要的角色，因为它管理着整个请求-响应周期。下面是对 <code>DispatcherServlet</code> 的一些关键特性的介绍：</p>
+<h3 id="DispatcherServlet-的作用"><a href="#DispatcherServlet-的作用" class="headerlink" title="DispatcherServlet 的作用"></a>DispatcherServlet 的作用</h3><ol>
+<li><strong>请求处理入口</strong>：<ul>
+<li>当客户端发送请求到服务器时，该请求会被转发到 <code>DispatcherServlet</code>。</li>
+<li><code>DispatcherServlet</code> 是所有 Web 请求的入口点。</li>
+</ul>
+</li>
+<li><strong>请求分发</strong>：<ul>
+<li><code>DispatcherServlet</code> 使用不同的组件（如 <code>HandlerMapping</code> 和 <code>HandlerAdapter</code>）来确定哪个控制器（Controller）方法应该处理这个请求。</li>
+<li>它还负责将请求参数绑定到控制器方法的参数上。</li>
+</ul>
+</li>
+<li><strong>视图渲染</strong>：<ul>
+<li>在控制器方法执行完毕后，<code>DispatcherServlet</code> 会根据控制器返回的结果来选择合适的视图进行渲染。</li>
+<li>它使用 <code>ViewResolver</code> 来解析视图名，并将模型数据传递给视图进行渲染。</li>
+</ul>
+</li>
+<li><strong>拦截器支持</strong>：<ul>
+<li><code>DispatcherServlet</code> 支持拦截器（Interceptor），可以在请求处理前后执行一些操作，比如日志记录、权限检查等。</li>
+</ul>
+</li>
+<li><strong>异常处理</strong>：<ul>
+<li>它还负责处理控制器抛出的异常，并将它们转换成适当的错误视图或者错误响应。</li>
+</ul>
+</li>
+</ol>
+<h3 id="DispatcherServlet-的工作流程"><a href="#DispatcherServlet-的工作流程" class="headerlink" title="DispatcherServlet 的工作流程"></a>DispatcherServlet 的工作流程</h3><ol>
+<li><strong>初始化</strong>：<ul>
+<li>当 <code>DispatcherServlet</code> 被部署到 Web 应用程序容器时，它会初始化一个或多个 WebApplicationContext。</li>
+<li>初始化过程中，它会加载配置文件（如 XML 或 Java 配置类），并创建相应的 Spring Beans。</li>
+</ul>
+</li>
+<li><strong>请求处理</strong>：<ul>
+<li>当一个 HTTP 请求到达时，<code>DispatcherServlet</code> 会获取请求信息（如 URL、HTTP 方法等）。</li>
+<li>它会使用 <code>HandlerMapping</code> 来找到一个合适的控制器方法来处理这个请求。</li>
+<li>如果找到了匹配的控制器方法，<code>DispatcherServlet</code> 会使用 <code>HandlerAdapter</code> 来调用这个方法。</li>
+<li>控制器方法执行完毕后，它通常会返回一个 <code>ModelAndView</code> 对象或直接返回视图名。</li>
+<li><code>DispatcherServlet</code> 使用 <code>ViewResolver</code> 来解析视图名，并将模型数据传递给视图。</li>
+<li>视图完成渲染后，响应被发送回客户端。</li>
+</ul>
+</li>
+</ol>
+<h3 id="如何配置-DispatcherServlet"><a href="#如何配置-DispatcherServlet" class="headerlink" title="如何配置 DispatcherServlet"></a>如何配置 DispatcherServlet</h3><p>在 Spring MVC 应用中，<code>DispatcherServlet</code> 通常通过 web.xml 文件或使用 Java 配置来配置。下面是一个简单的 web.xml 配置示例：</p>
+<p>Xml深色版本</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">1&lt;servlet&gt;</span><br><span class="line">2    &lt;servlet-name&gt;dispatcher&lt;/servlet-name&gt;</span><br><span class="line">3    &lt;servlet-class&gt;org.springframework.web.servlet.DispatcherServlet&lt;/servlet-class&gt;</span><br><span class="line">4    &lt;init-param&gt;</span><br><span class="line">5        &lt;param-name&gt;contextConfigLocation&lt;/param-name&gt;</span><br><span class="line">6        &lt;param-value&gt;/WEB-INF/dispatcher-servlet.xml&lt;/param-value&gt;</span><br><span class="line">7    &lt;/init-param&gt;</span><br><span class="line">8    &lt;load-on-startup&gt;1&lt;/load-on-startup&gt;</span><br><span class="line">9&lt;/servlet&gt;</span><br><span class="line">10</span><br><span class="line">11&lt;servlet-mapping&gt;</span><br><span class="line">12    &lt;servlet-name&gt;dispatcher&lt;/servlet-name&gt;</span><br><span class="line">13    &lt;url-pattern&gt;/&lt;/url-pattern&gt;</span><br><span class="line">14&lt;/servlet-mapping&gt;</span><br></pre></td></tr></table></figure>
+
+<p>在这个例子中，<code>DispatcherServlet</code> 被配置为处理所有的请求（通过 <code>&lt;url-pattern&gt;/&lt;/url-pattern&gt;</code>）。</p>
+<p>在 Spring Boot 中，<code>DispatcherServlet</code> 的配置通常被简化，并且可以通过注解和自动配置来实现。例如，使用 <code>@SpringBootApplication</code> 注解的应用会默认包含一个 <code>DispatcherServlet</code>。</p>
+<h3 id="总结-1"><a href="#总结-1" class="headerlink" title="总结"></a>总结</h3><p><code>DispatcherServlet</code> 是 Spring MVC 中的核心组件，用于处理和分发所有的 HTTP 请求。它利用一系列的组件（如 <code>HandlerMapping</code>、<code>HandlerAdapter</code> 和 <code>ViewResolver</code>）来完成从请求处理到视图渲染的整个流程。如果您需要对 Spring MVC 的请求处理机制有更深入的理解，了解 <code>DispatcherServlet</code> 的工作原理是非常重要的。</p>
+<p><code>DispatcherServlet</code> 是 Spring MVC 框架中的核心组件，它负责处理所有的 HTTP 请求，并分发这些请求到适当的控制器（Controller）。下面是 <code>DispatcherServlet</code> 处理请求的详细原理：</p>
+<h3 id="DispatcherServlet-工作流程"><a href="#DispatcherServlet-工作流程" class="headerlink" title="DispatcherServlet 工作流程"></a>DispatcherServlet 工作流程</h3><ol>
+<li><strong>初始化</strong>：<ul>
+<li>当 <code>DispatcherServlet</code> 被部署到 Web 应用程序容器时，它会初始化一个或多个 WebApplicationContext。</li>
+<li>初始化过程中，它会加载配置文件（如 XML 或 Java 配置类），并创建相应的 Spring Beans。</li>
+<li>它还会创建并配置一系列的关键组件，如 <code>HandlerMapping</code>、<code>HandlerAdapter</code>、<code>ViewResolver</code> 等。</li>
+</ul>
+</li>
+<li><strong>请求到达</strong>：<ul>
+<li>当一个 HTTP 请求到达时，<code>DispatcherServlet</code> 会获取请求信息（如 URL、HTTP 方法等）。</li>
+<li>它会使用 <code>HandlerMapping</code> 来找到一个合适的控制器方法来处理这个请求。</li>
+<li><code>HandlerMapping</code> 实现类会根据请求 URL 和 HTTP 方法来决定哪个控制器方法最适合处理请求。</li>
+<li>如果找到了匹配的控制器方法，<code>DispatcherServlet</code> 会创建一个 <code>HandlerExecutionChain</code> 对象，该对象包含了控制器方法和任何相关的拦截器。</li>
+</ul>
+</li>
+<li><strong>调用控制器方法</strong>：<ul>
+<li><code>DispatcherServlet</code> 会使用 <code>HandlerAdapter</code> 来调用控制器方法。</li>
+<li><code>HandlerAdapter</code> 会根据控制器方法的类型来选择适当的适配器。</li>
+<li>它负责将请求参数绑定到控制器方法的参数上。</li>
+<li>控制器方法执行完毕后，它通常会返回一个 <code>ModelAndView</code> 对象或直接返回视图名。</li>
+</ul>
+</li>
+<li><strong>处理视图</strong>：<ul>
+<li><code>DispatcherServlet</code> 使用 <code>ViewResolver</code> 来解析视图名，并将模型数据传递给视图。</li>
+<li><code>ViewResolver</code> 会根据视图名来加载实际的视图对象。</li>
+<li>视图完成渲染后，响应被发送回客户端。</li>
+</ul>
+</li>
+<li><strong>异常处理</strong>：<ul>
+<li>如果控制器方法抛出了异常，<code>DispatcherServlet</code> 会尝试将异常转换成适当的错误视图或错误响应。</li>
+<li>它会使用 <code>ExceptionResolver</code> 来处理异常。</li>
+<li><code>ExceptionResolver</code> 会根据异常类型来决定如何处理异常，例如显示错误页面或返回错误状态码。</li>
+</ul>
+</li>
+<li><strong>拦截器执行</strong>：<ul>
+<li>如果控制器方法关联了拦截器，<code>DispatcherServlet</code> 会在请求处理前后执行这些拦截器。</li>
+<li>拦截器可以用来执行诸如日志记录、权限检查等操作。</li>
+<li>拦截器的执行顺序是按照 <code>HandlerExecutionChain</code> 中定义的顺序进行的。</li>
+</ul>
+</li>
+</ol>
+<h3 id="DispatcherServlet-的主要组件"><a href="#DispatcherServlet-的主要组件" class="headerlink" title="DispatcherServlet 的主要组件"></a>DispatcherServlet 的主要组件</h3><ol>
+<li><strong>HandlerMapping</strong>：<ul>
+<li>负责找到与请求相匹配的控制器方法。</li>
+<li>实现了 <code>org.springframework.web.servlet.HandlerMapping</code> 接口的不同实现类可以有不同的匹配策略。</li>
+<li>常见的实现包括 <code>BeanNameUrlHandlerMapping</code>、<code>SimpleUrlHandlerMapping</code> 和 <code>RequestMappingHandlerMapping</code>。</li>
+</ul>
+</li>
+<li><strong>HandlerAdapter</strong>：<ul>
+<li>负责调用控制器方法。</li>
+<li>实现了 <code>org.springframework.web.servlet.mvc.Controller</code> 接口的不同实现类可以有不同的调用策略。</li>
+<li>常见的实现包括 <code>SimpleControllerHandlerAdapter</code> 和 <code>RequestMappingHandlerAdapter</code>。</li>
+</ul>
+</li>
+<li><strong>ViewResolver</strong>：<ul>
+<li>负责解析视图名，将其转换为实际的视图对象。</li>
+<li>实现了 <code>org.springframework.web.servlet.ViewResolver</code> 接口的不同实现类可以有不同的解析策略。</li>
+<li>常见的实现包括 <code>InternalResourceViewResolver</code> 和 <code>FreeMarkerViewResolver</code>。</li>
+</ul>
+</li>
+<li><strong>ExceptionResolver</strong>：<ul>
+<li>负责处理控制器方法抛出的异常。</li>
+<li>实现了 <code>org.springframework.web.servlet.handler.ExceptionHandlerExceptionResolver</code> 接口的不同实现类可以有不同的处理策略。</li>
+</ul>
+</li>
+<li><strong>Interceptor</strong>：<ul>
+<li>负责在请求处理前后执行一些逻辑，如日志记录、权限检查等。</li>
+<li>实现了 <code>org.springframework.web.servlet.HandlerInterceptor</code> 接口的不同实现类可以有不同的执行逻辑。</li>
+</ul>
+</li>
+</ol>
+<h3 id="总结-2"><a href="#总结-2" class="headerlink" title="总结"></a>总结</h3><p><code>DispatcherServlet</code> 是 Spring MVC 框架的核心组件，它通过一系列的组件（如 <code>HandlerMapping</code>、<code>HandlerAdapter</code> 和 <code>ViewResolver</code>）来完成从请求处理到视图渲染的整个流程。了解这些组件的工作原理对于理解 Spring MVC 的工作机制至关重要。</p>
+<p>当一个 HTTP 请求到达时，<code>DispatcherServlet</code> 会获取请求信息（如 URL、HTTP 方法等）。这一过程涉及到了几个关键步骤：</p>
+<h3 id="请求到达"><a href="#请求到达" class="headerlink" title="请求到达"></a>请求到达</h3><ol>
+<li><strong>容器接收请求</strong>：<ul>
+<li>当一个 HTTP 请求到达 Web 服务器时，Web 服务器（如 Apache Tomcat、Jetty 等）会将请求转发给相应的 Servlet 容器。</li>
+<li>Servlet 容器负责处理这个请求，并将其分发给合适的 Servlet。</li>
+</ul>
+</li>
+<li><strong>DispatcherServlet 处理请求</strong>：<ul>
+<li><code>DispatcherServlet</code> 作为 Servlet 容器中的一个 Servlet，它被配置为处理特定的 URL 模式（通常是 <code>/*</code> 或 <code>/app/*</code> 等）。</li>
+<li>当请求被分发到 <code>DispatcherServlet</code> 时，<code>DispatcherServlet</code> 会开始处理这个请求。</li>
+</ul>
+</li>
+</ol>
+<h3 id="获取请求信息"><a href="#获取请求信息" class="headerlink" title="获取请求信息"></a>获取请求信息</h3><ol>
+<li><strong>读取 HttpServletRequest</strong>：<ul>
+<li><code>DispatcherServlet</code> 通过 <code>HttpServletRequest</code> 对象来获取请求信息。</li>
+<li><code>HttpServletRequest</code> 是 Java Servlet API 的一部分，它封装了客户端发送的所有请求信息，包括请求方法（GET、POST 等）、URL、查询参数、头部信息等。</li>
+<li><code>DispatcherServlet</code> 会从 <code>HttpServletRequest</code> 中读取这些信息。</li>
+</ul>
+</li>
+<li><strong>解析请求方法和 URL</strong>：<ul>
+<li><code>DispatcherServlet</code> 会读取 <code>HttpServletRequest</code> 中的 <code>getMethod()</code> 方法来获取 HTTP 请求的方法（GET、POST 等）。</li>
+<li>通过调用 <code>getRequestURI()</code> 方法来获取请求的 URI，即 URL 中的路径部分。</li>
+</ul>
+</li>
+<li><strong>请求映射</strong>：<ul>
+<li><code>DispatcherServlet</code> 会使用 <code>HandlerMapping</code> 接口的实现类来解析请求 URL 和 HTTP 方法，并找到与之匹配的控制器方法。</li>
+<li><code>HandlerMapping</code> 实现类（如 <code>RequestMappingHandlerMapping</code>）会根据请求方法和 URL 来决定哪个控制器方法最适合处理请求。</li>
+<li>这个过程涉及到将请求 URL 与控制器方法上的注解（如 <code>@GetMapping</code>, <code>@PostMapping</code> 等）进行匹配。</li>
+</ul>
+</li>
+<li><strong>创建 HandlerExecutionChain</strong>：<ul>
+<li>一旦找到匹配的控制器方法，<code>HandlerMapping</code> 会创建一个 <code>HandlerExecutionChain</code> 对象。</li>
+<li><code>HandlerExecutionChain</code> 包含了控制器方法和任何相关联的拦截器（如果有的话）。</li>
+<li><code>HandlerExecutionChain</code> 会被传递给 <code>DispatcherServlet</code>，以便后续处理。</li>
+</ul>
+</li>
+</ol>
+<h3 id="请求处理"><a href="#请求处理" class="headerlink" title="请求处理"></a>请求处理</h3><ol>
+<li><strong>调用控制器方法</strong>：<ul>
+<li><code>DispatcherServlet</code> 会使用 <code>HandlerAdapter</code> 来调用控制器方法。</li>
+<li><code>HandlerAdapter</code> 负责确定如何调用控制器方法，并将请求参数绑定到控制器方法的参数上。</li>
+<li>常见的 <code>HandlerAdapter</code> 包括 <code>RequestMappingHandlerAdapter</code>，它可以处理带有 <code>@RequestMapping</code> 注解的控制器方法。</li>
+</ul>
+</li>
+<li><strong>执行控制器方法</strong>：<ul>
+<li>控制器方法执行完毕后，它通常会返回一个 <code>ModelAndView</code> 对象或直接返回视图名。</li>
+<li>如果控制器方法抛出了异常，<code>DispatcherServlet</code> 会尝试将异常转换成适当的错误视图或错误响应。</li>
+</ul>
+</li>
+</ol>
+<h3 id="总结-3"><a href="#总结-3" class="headerlink" title="总结"></a>总结</h3><p><code>DispatcherServlet</code> 通过读取 <code>HttpServletRequest</code> 中的信息来获取请求方法和 URL，并使用 <code>HandlerMapping</code> 来找到匹配的控制器方法。然后，通过 <code>HandlerAdapter</code> 来调用控制器方法，并处理视图和异常。整个过程是自动化的，开发者不需要直接处理这些底层细节。了解这一过程有助于更好地理解 Spring MVC 的工作原理。</p>
+<p>Web 服务器（如 Apache Tomcat）接收 HTTP 请求的过程涉及到多个组件和层次。下面是一个简化的描述，解释了 Tomcat 如何接收和处理 HTTP 请求：</p>
+<h3 id="Tomcat-接收-HTTP-请求的流程"><a href="#Tomcat-接收-HTTP-请求的流程" class="headerlink" title="Tomcat 接收 HTTP 请求的流程"></a>Tomcat 接收 HTTP 请求的流程</h3><ol>
+<li><strong>网络层</strong>：<ul>
+<li>当客户端（如浏览器）发起 HTTP 请求时，该请求首先通过网络层传输到服务器。</li>
+<li>服务器监听特定的端口（通常是 HTTP 的 80 端口或 HTTPS 的 443 端口）。</li>
+</ul>
+</li>
+<li><strong>Connector 组件</strong>：<ul>
+<li>Tomcat 使用 Connector 组件来监听网络连接并接收客户端发送的 HTTP 请求。</li>
+<li>Connector 可以配置为支持不同的协议，如 HTTP&#x2F;1.1、HTTPS、AJP 等。</li>
+<li>Connector 组件将接收到的请求包装成 <code>HttpServletRequest</code> 对象，并将响应包装成 <code>HttpServletResponse</code> 对象。</li>
+</ul>
+</li>
+<li><strong>Host 和 Context</strong>：<ul>
+<li>当 Connector 接收到请求后，它会根据请求中的主机名（Host header）将请求分发给对应的 Host 组件。</li>
+<li>每个 Host 组件代表一个虚拟主机，它可以配置多个 Context 组件，每个 Context 代表一个 Web 应用。</li>
+<li>Host 和 Context 组件会根据请求 URL 中的上下文路径（context path）来确定哪个 Web 应用应该处理这个请求。</li>
+</ul>
+</li>
+<li><strong>Web 应用容器</strong>：<ul>
+<li>当请求被分发到正确的 Context 之后，Tomcat 的 Web 应用容器（通常是指 Servlet 容器）开始处理请求。</li>
+<li>Web 应用容器会创建一个新的线程来处理这个请求。</li>
+</ul>
+</li>
+<li><strong>Servlet 容器</strong>：<ul>
+<li>Servlet 容器是 Tomcat 的核心组件之一，它负责管理 Servlet 的生命周期（如初始化、服务、销毁）。</li>
+<li>当请求到达 Servlet 容器时，容器会根据 URL 映射找到合适的 Servlet 来处理请求。</li>
+<li>Servlet 容器会调用 Servlet 的 <code>service()</code> 方法，该方法内部会调用 <code>doGet()</code>、<code>doPost()</code> 等方法，具体取决于请求方法。</li>
+</ul>
+</li>
+<li><strong>DispatcherServlet</strong>（如果是 Spring MVC 应用）：<ul>
+<li>如果 Web 应用使用了 Spring MVC 框架，那么 Servlet 容器会将请求分发给 <code>DispatcherServlet</code>。</li>
+<li><code>DispatcherServlet</code> 是 Spring MVC 的核心组件，它负责处理请求、分发请求到控制器（Controller）、处理视图等。</li>
+<li><code>DispatcherServlet</code> 会使用 <code>HandlerMapping</code> 来找到匹配的控制器方法，并使用 <code>HandlerAdapter</code> 来调用控制器方法。</li>
+</ul>
+</li>
+<li><strong>处理请求</strong>：<ul>
+<li>控制器方法执行完毕后，通常会返回一个 <code>ModelAndView</code> 对象或直接返回视图名。</li>
+<li><code>DispatcherServlet</code> 会使用 <code>ViewResolver</code> 来解析视图名，并将模型数据传递给视图进行渲染。</li>
+</ul>
+</li>
+<li><strong>生成响应</strong>：<ul>
+<li>一旦视图完成渲染，生成的 HTML 或其他类型的响应内容会被封装进 <code>HttpServletResponse</code> 对象。</li>
+<li>Servlet 容器会将 <code>HttpServletResponse</code> 对象发送回客户端。</li>
+</ul>
+</li>
+</ol>
+<h3 id="总结-4"><a href="#总结-4" class="headerlink" title="总结"></a>总结</h3><ul>
+<li><strong>网络层</strong>：客户端发起请求，通过网络传输到服务器。</li>
+<li><strong>Connector</strong>：Tomcat 的 Connector 组件接收请求并将其封装成 <code>HttpServletRequest</code> 和 <code>HttpServletResponse</code> 对象。</li>
+<li><strong>Host 和 Context</strong>：根据请求中的主机名和上下文路径将请求分发给正确的 Web 应用。</li>
+<li><strong>Servlet 容器</strong>：管理 Servlet 的生命周期并调用合适的 Servlet 来处理请求。</li>
+<li><strong>DispatcherServlet</strong>（可选）：在 Spring MVC 应用中，<code>DispatcherServlet</code> 负责处理请求、分发请求到控制器、处理视图等。</li>
+</ul>
+<p>以上是 Tomcat 处理 HTTP 请求的基本流程。了解这一流程有助于理解 Web 服务器是如何接收和处理 HTTP 请求的，以及如何与 Web 应用交互。</p>
+<p>Tomcat 的 <code>Connector</code> 组件用于监听网络连接并接收客户端发送的 HTTP 请求。以下是 <code>Connector</code> 组件如何监听网络连接的更详细的说明：</p>
+<ol>
+<li><strong>配置 Connector</strong>：<ul>
+<li>在 Tomcat 的配置文件 <code>server.xml</code> 中，<code>Connector</code> 元素定义了连接器的行为和属性。</li>
+<li>例如，你可以指定端口号、协议类型（如 HTTP&#x2F;1.1 或 HTTPS）、最大连接数、线程池大小等配置。</li>
+</ul>
+</li>
+<li><strong>启动 Connector</strong>：<ul>
+<li>当 Tomcat 启动时，它会读取 <code>server.xml</code> 文件，并初始化所有配置好的 <code>Connector</code> 组件。</li>
+<li><code>Connector</code> 组件会在指定的端口上启动一个监听器。</li>
+</ul>
+</li>
+<li><strong>监听 Socket 连接</strong>：<ul>
+<li><code>Connector</code> 使用 Java 的 Socket API 来监听客户端的连接请求。</li>
+<li>一旦有客户端尝试建立连接，<code>Connector</code> 就会接受这个连接并创建一个新的 Socket 连接。</li>
+</ul>
+</li>
+<li><strong>处理请求</strong>：<ul>
+<li>每当有一个新的 Socket 连接时，<code>Connector</code> 会从线程池中分配一个线程来处理这个连接。</li>
+<li>线程读取 Socket 中的数据，这些数据包含了 HTTP 请求报文。</li>
+</ul>
+</li>
+<li><strong>解析请求</strong>：<ul>
+<li><code>Connector</code> 读取 Socket 中的数据流，并解析这个数据流为一个 HTTP 请求。</li>
+<li>解析后的 HTTP 请求被封装为 <code>HttpServletRequest</code> 对象。</li>
+</ul>
+</li>
+<li><strong>分发请求</strong>：<ul>
+<li>一旦请求被解析，<code>Connector</code> 将把 <code>HttpServletRequest</code> 和 <code>HttpServletResponse</code> 对象传递给 Tomcat 的引擎（Engine），引擎再根据配置的虚拟主机（Host）和上下文（Context）进一步处理请求。</li>
+<li><code>Connector</code> 本身并不处理请求逻辑，而是将请求传递给 Tomcat 的内部组件进行处理。</li>
+</ul>
+</li>
+<li><strong>发送响应</strong>：<ul>
+<li>一旦请求被处理并生成了响应，<code>Connector</code> 会将 <code>HttpServletResponse</code> 中的数据写回到 Socket 连接中，从而发送给客户端。</li>
+<li>响应完成后，Socket 连接会被关闭或保持打开状态（取决于 HTTP 协议版本和配置）。</li>
+</ul>
+</li>
+</ol>
+<h3 id="Connector-的实现"><a href="#Connector-的实现" class="headerlink" title="Connector 的实现"></a>Connector 的实现</h3><ul>
+<li><strong>NIO 连接器</strong>：<ul>
+<li>Tomcat 提供了一个基于 NIO (Non-blocking I&#x2F;O) 的连接器，称为 <code>org.apache.coyote.http11.Http11NioProtocol</code>。</li>
+<li>NIO 连接器使用非阻塞 I&#x2F;O 来提高性能，特别是当服务器需要处理大量并发连接时。</li>
+</ul>
+</li>
+<li><strong>BIO 连接器</strong>：<ul>
+<li>Tomcat 也提供了基于 BIO (Blocking I&#x2F;O) 的连接器，称为 <code>org.apache.coyote.http11.Http11AprProtocol</code> 或 <code>org.apache.coyote.http11.Http11AprProtocol</code>。</li>
+<li>BIO 连接器使用阻塞 I&#x2F;O 模型，这在处理少量连接时可能更加简单。</li>
+</ul>
+</li>
+<li><strong>AJP 连接器</strong>：<ul>
+<li>Tomcat 还可以配置 AJP (Apache JServ Protocol) 连接器，用于与 Apache HTTP Server 配合工作。</li>
+</ul>
+</li>
+</ul>
+<h3 id="示例配置"><a href="#示例配置" class="headerlink" title="示例配置"></a>示例配置</h3><p>在 <code>server.xml</code> 中，一个典型的 <code>Connector</code> 配置可能如下所示：</p>
+<p>Xml深色版本</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">1&lt;Connector port=&quot;8080&quot; protocol=&quot;HTTP/1.1&quot;</span><br><span class="line">2           connectionTimeout=&quot;20000&quot;</span><br><span class="line">3           redirectPort=&quot;8443&quot; /&gt;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><code>port</code> 属性指定了 <code>Connector</code> 监听的端口。</li>
+<li><code>protocol</code> 属性指定了 <code>Connector</code> 支持的协议。</li>
+<li><code>connectionTimeout</code> 属性指定了在超时前等待客户端发送请求的时间。</li>
+<li><code>redirectPort</code> 属性指定了重定向 HTTPS 请求时使用的端口。</li>
+</ul>
+<h3 id="总结-5"><a href="#总结-5" class="headerlink" title="总结"></a>总结</h3><ul>
+<li><strong>配置</strong>：在 <code>server.xml</code> 文件中配置 <code>Connector</code>。</li>
+<li><strong>监听</strong>：<code>Connector</code> 在指定的端口上监听客户端连接。</li>
+<li><strong>处理</strong>：一旦客户端连接，<code>Connector</code> 读取并解析 HTTP 请求，然后将请求交给 Tomcat 的内部组件处理。</li>
+<li><strong>响应</strong>：处理完成后，<code>Connector</code> 发送响应给客户端，并管理 Socket 连接的状态。</li>
+</ul>
+<p>这就是 Tomcat 的 <code>Connector</code> 组件如何监听网络连接并处理 HTTP 请求的基本过程。</p>
+]]></content>
+      <categories>
+        <category>Java</category>
+        <category>Spring</category>
+        <category>Spring Web</category>
+      </categories>
+      <tags>
+        <tag>Java</tag>
+        <tag>Spring</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>JVM</title>
     <url>/2023/10/15/JVM/</url>
     <content><![CDATA[<h1 id="JVM"><a href="#JVM" class="headerlink" title="JVM"></a>JVM</h1><h2 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h2><p>主要记录JVM中，字节码、Class文件、类加载机制、运行时内存、堆、方法区、对象的内存布局等知识。</p>

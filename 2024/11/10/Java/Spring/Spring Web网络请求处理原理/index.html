@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha256-5eIC48iZUHmSlSUz9XtjRyK2mzQkHScZY1WdMaoz74E=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Mist","darkmode":false,"version":"8.21.1","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"},"path":"/search.xml","localsearch":{"enable":true,"top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="在学习 Java Web 开发时，我们很可能忽略了如何使用原生 Java Servlet 和 JSP 构建 Java Web 应用并将其部署到如 Tomcat 等应用服务器中。得益于 Spring Boot 与 Spring MVC 的简化操作，创建一个 Java Web 应用变得异常简单。然而，如果不了解程序的底层运行机制，可能会影响我们对整个系统的全面理解，甚至限制进一步的深度开发。 因此，我">
+<meta property="og:type" content="article">
+<meta property="og:title" content="简单理解Spring Web下的Java Web应用的处理Http请求流程">
+<meta property="og:url" content="http://example.com/2024/11/10/Java/Spring/Spring%20Web%E7%BD%91%E7%BB%9C%E8%AF%B7%E6%B1%82%E5%A4%84%E7%90%86%E5%8E%9F%E7%90%86/index.html">
+<meta property="og:site_name" content="baiyin’s blog">
+<meta property="og:description" content="在学习 Java Web 开发时，我们很可能忽略了如何使用原生 Java Servlet 和 JSP 构建 Java Web 应用并将其部署到如 Tomcat 等应用服务器中。得益于 Spring Boot 与 Spring MVC 的简化操作，创建一个 Java Web 应用变得异常简单。然而，如果不了解程序的底层运行机制，可能会影响我们对整个系统的全面理解，甚至限制进一步的深度开发。 因此，我">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://raw.githubusercontent.com/baiyina/baiyina.github.image/main/img/202411131115085.png">
+<meta property="og:image" content="d:\%E5%A4%A7%E4%BA%8C%EF%BC%8823.7%EF%BC%89\JavaSE%E6%B5%85%E5%AD%A6\%E5%9B%BE%E7%89%87\image-20241113114237726.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/baiyina/baiyina.github.image/main/img/202411131121593.png">
+<meta property="article:published_time" content="2024-11-10T12:47:00.000Z">
+<meta property="article:modified_time" content="2024-11-13T14:26:21.644Z">
+<meta property="article:author" content="baiyina">
+<meta property="article:tag" content="Java">
+<meta property="article:tag" content="Spring">
+<meta property="article:tag" content="Spring Web">
+<meta property="article:tag" content="web">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/baiyina/baiyina.github.image/main/img/202411131115085.png">
+
+
+<link rel="canonical" href="http://example.com/2024/11/10/Java/Spring/Spring%20Web%E7%BD%91%E7%BB%9C%E8%AF%B7%E6%B1%82%E5%A4%84%E7%90%86%E5%8E%9F%E7%90%86/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"en","comments":true,"permalink":"http://example.com/2024/11/10/Java/Spring/Spring%20Web%E7%BD%91%E7%BB%9C%E8%AF%B7%E6%B1%82%E5%A4%84%E7%90%86%E5%8E%9F%E7%90%86/","path":"2024/11/10/Java/Spring/Spring Web网络请求处理原理/","title":"简单理解Spring Web下的Java Web应用的处理Http请求流程"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>简单理解Spring Web下的Java Web应用的处理Http请求流程 | baiyin’s blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">baiyin’s blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">"Talk is cheap. Show me the code."</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="Search" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="Searching..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9B%9E%E5%88%B0%E6%A2%A6%E5%BC%80%E5%A7%8B%E7%9A%84%E5%9C%B0%E6%96%B9"><span class="nav-number">1.</span> <span class="nav-text">回到梦开始的地方</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%97%A0%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%8E%AF%E5%A2%83"><span class="nav-number">1.1.</span> <span class="nav-text">无服务器环境</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%9A%84%E4%B8%BB%E8%A6%81%E5%8A%9F%E8%83%BD"><span class="nav-number">1.1.1.</span> <span class="nav-text">服务器的主要功能</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%85%88%E7%9C%8B%E4%BB%A3%E7%A0%81"><span class="nav-number">1.1.1.1.</span> <span class="nav-text">先看代码</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BB%A3%E7%A0%81%E8%A7%A3%E9%87%8A-%E4%B8%8B%E4%B8%80%E9%98%B6%E6%AE%B5"><span class="nav-number">1.1.1.2.</span> <span class="nav-text">代码解释 &amp; 下一阶段</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%89%80%E5%BA%94%E6%89%BF%E6%8B%85%E7%9A%84%E6%9B%B4%E5%A4%9A%E5%8A%9F%E8%83%BD"><span class="nav-number">1.1.2.</span> <span class="nav-text">服务器所应承担的更多功能</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%85%88%E7%9C%8B%E4%BB%A3%E7%A0%81-1"><span class="nav-number">1.1.2.1.</span> <span class="nav-text">先看代码</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E8%BF%90%E8%A1%8C%E6%96%B9%E5%BC%8F"><span class="nav-number">1.1.2.1.1.</span> <span class="nav-text">运行方式</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E7%8E%AF%E5%A2%83"><span class="nav-number">1.1.2.1.2.</span> <span class="nav-text">环境</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BB%A3%E7%A0%81%E8%A7%A3%E9%87%8A-%E4%B8%8B%E4%B8%80%E9%98%B6%E6%AE%B5-1"><span class="nav-number">1.1.2.2.</span> <span class="nav-text">代码解释 &amp; 下一阶段</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BC%95%E5%85%A5Tomcat"><span class="nav-number">1.2.</span> <span class="nav-text">引入Tomcat</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8Tomcat%E6%9E%84%E5%BB%BA%E7%AE%80%E5%8D%95%E6%9C%8D%E5%8A%A1%E5%99%A8"><span class="nav-number">1.2.1.</span> <span class="nav-text">使用Tomcat构建简单服务器</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%85%88%E7%9C%8B%E4%BB%A3%E7%A0%81-2"><span class="nav-number">1.2.1.1.</span> <span class="nav-text">先看代码</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E8%BF%90%E8%A1%8C%E6%96%B9%E5%BC%8F-1"><span class="nav-number">1.2.1.1.1.</span> <span class="nav-text">运行方式</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E7%8E%AF%E5%A2%83-1"><span class="nav-number">1.2.1.1.2.</span> <span class="nav-text">环境</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BB%A3%E7%A0%81%E8%A7%A3%E9%87%8A-%E4%B8%8B%E4%B8%80%E9%98%B6%E6%AE%B5-2"><span class="nav-number">1.2.1.2.</span> <span class="nav-text">代码解释 &amp; 下一阶段</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Spring-Boot-Spring-MVC%E6%9E%84%E5%BB%BA%E7%9A%84JavWeb%E5%BA%94%E7%94%A8%E5%A4%84%E7%90%86HTTP%E8%AF%B7%E6%B1%82%E7%A4%BA%E4%BE%8B"><span class="nav-number">2.</span> <span class="nav-text">Spring Boot + Spring MVC构建的JavWeb应用处理HTTP请求示例</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%80%E8%BF%B0"><span class="nav-number">2.1.</span> <span class="nav-text">简述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E5%AE%A2%E6%88%B7%E7%AB%AF%E5%8F%91%E8%B5%B7%E8%AF%B7%E6%B1%82"><span class="nav-number">2.2.</span> <span class="nav-text">1. 客户端发起请求</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-HTTP%E8%AF%B7%E6%B1%82%E4%BC%A0%E8%BE%93%E5%88%B0%E6%9C%8D%E5%8A%A1%E5%99%A8"><span class="nav-number">2.3.</span> <span class="nav-text">2.HTTP请求传输到服务器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-%E8%AF%B7%E6%B1%82%E5%A4%84%E7%90%86-Tomcat"><span class="nav-number">2.4.</span> <span class="nav-text">3.请求处理-Tomcat</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-DispatcherServlet%E5%A4%84%E7%90%86%E8%AF%B7%E6%B1%82"><span class="nav-number">2.5.</span> <span class="nav-text">4.DispatcherServlet处理请求</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-Controller%E5%A4%84%E7%90%86%E8%AF%B7%E6%B1%82%E9%80%BB%E8%BE%91"><span class="nav-number">2.6.</span> <span class="nav-text">5.Controller处理请求逻辑</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-View%E8%A7%A3%E6%9E%90%E5%92%8C%E6%B8%B2%E6%9F%93"><span class="nav-number">2.7.</span> <span class="nav-text">6.View解析和渲染</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#7-%E7%94%9F%E6%88%90HTTP%E5%93%8D%E5%BA%94"><span class="nav-number">2.8.</span> <span class="nav-text">7.生成HTTP响应</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#8-%E5%85%B3%E9%97%ADTCP%E8%BF%9E%E6%8E%A5"><span class="nav-number">2.9.</span> <span class="nav-text">8.关闭TCP连接</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="baiyina"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">baiyina</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">2</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">categories</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/baiyina" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;baiyina" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:baiyinaGuo@gmail.com" title="E-Mail → mailto:baiyinaGuo@gmail.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2024/11/10/Java/Spring/Spring%20Web%E7%BD%91%E7%BB%9C%E8%AF%B7%E6%B1%82%E5%A4%84%E7%90%86%E5%8E%9F%E7%90%86/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="baiyina">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="baiyin’s blog">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="简单理解Spring Web下的Java Web应用的处理Http请求流程 | baiyin’s blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          简单理解Spring Web下的Java Web应用的处理Http请求流程
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2024-11-10 20:47:00" itemprop="dateCreated datePublished" datetime="2024-11-10T20:47:00+08:00">2024-11-10</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">Edited on</span>
+      <time title="Modified: 2024-11-13 22:26:21" itemprop="dateModified" datetime="2024-11-13T22:26:21+08:00">2024-11-13</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a>
+        </span>
+          , 
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Java/Spring/" itemprop="url" rel="index"><span itemprop="name">Spring</span></a>
+        </span>
+          , 
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Java/Spring/Spring-Web/" itemprop="url" rel="index"><span itemprop="name">Spring Web</span></a>
+        </span>
+          , 
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Java/Spring/Spring-Web/web/" itemprop="url" rel="index"><span itemprop="name">web</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="Views" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">Views: </span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="Word count in article">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">Word count in article: </span>
+      <span>18k</span>
+    </span>
+    <span class="post-meta-item" title="Reading time">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">Reading time &asymp;</span>
+      <span>33 mins.</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>在学习 Java Web 开发时，我们很可能忽略了如何使用原生 Java Servlet 和 JSP 构建 Java Web 应用并将其部署到如 Tomcat 等应用服务器中。得益于 Spring Boot 与 Spring MVC 的简化操作，创建一个 Java Web 应用变得异常简单。然而，如果不了解程序的底层运行机制，可能会影响我们对整个系统的全面理解，甚至限制进一步的深度开发。</p>
+<p>因此，我梳理了一个由 Spring Boot 和 Spring MVC 构建的 Java Web 应用处理 HTTP 请求的完整流程，并总结了所涉及的各个组件及其作用。</p>
+<span id="more"></span>
+
+<h1 id="回到梦开始的地方"><a href="#回到梦开始的地方" class="headerlink" title="回到梦开始的地方"></a>回到梦开始的地方</h1><p>想要理解使用Spring Boot构建的Java Web应用是如何接收并处理请求的，我们就要先回顾传统的Java Web应用程序开发流程。这有助于我们建立对Web开发的基础认知，为理解框架的工作原理打下坚实基础。</p>
+<p><strong>本文将分三个阶段来描述Java Web程序的处理过程：</strong></p>
+<ul>
+<li><strong>无服务器环境</strong><br> 在这个最基础的阶段，我们将探索如何在没有应用服务器（如Tomcat）的情况下编写Java Web应用。这通常涉及到直接使用Servlet API来创建简单的HTTP服务。虽然这种方式提供了对底层机制的深入了解，但它缺乏现代Web开发所需的许多高级功能。</li>
+<li><strong>引入Tomcat</strong><br> 当我们将Tomcat这样的应用服务器引入开发环境中后，可以显著提高开发效率和应用性能。Tomcat负责管理Servlet的生命周期，处理客户端请求，并将请求转发给相应的Servlet进行处理。此外，它还提供了一些额外的服务，比如JSP支持和连接池管理等，这些都是构建复杂Web应用所必需的。</li>
+<li><strong>Spring Boot简化开发</strong><br> 随着项目规模的增长，传统方式下的配置管理和依赖管理变得越来越复杂。Spring Boot通过其约定优于配置的原则，极大地简化了基于Spring的应用开发。它自动配置了许多常用的设置，使得开发者可以更快地启动项目，同时提供了丰富的功能以支持微服务架构、安全性和数据访问等需求。</li>
+</ul>
+<h2 id="无服务器环境"><a href="#无服务器环境" class="headerlink" title="无服务器环境"></a>无服务器环境</h2><h3 id="服务器的主要功能"><a href="#服务器的主要功能" class="headerlink" title="服务器的主要功能"></a>服务器的主要功能</h3><p>一个服务器最最最基础的功能应该是什么呢，<strong>接收请求，回复请求</strong>对吧，那么在最初我们实现这样的功能时是怎样编写</p>
+<h4 id="先看代码"><a href="#先看代码" class="headerlink" title="先看代码"></a>先看代码</h4><p>代码如下：</p>
+<p>（代码注释由通义灵码倾情提供）</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.baiyina.demo.springweblearndemo.notomcat;</span><br><span class="line"><span class="keyword">import</span> java.io.*;</span><br><span class="line"><span class="keyword">import</span> java.net.ServerSocket;</span><br><span class="line"><span class="keyword">import</span> java.net.Socket;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * SimpleHttpServer 是一个简单的 HTTP 服务器实现。</span></span><br><span class="line"><span class="comment"> * 它监听指定端口，并对每个传入请求打印一个简单的响应。</span></span><br><span class="line"><span class="comment"> * 该服务器主要用于演示和测试目的，并不适合生产环境使用。</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> baiyina</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@since</span> 1.0</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">SimpleHttpServer</span> &#123;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 主函数，启动 HTTP 服务器并开始监听请求。</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> args 命令行参数，本例中未使用。</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@throws</span> IOException 如果服务器Socket初始化失败或在处理请求时发生I/O错误。</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> IOException &#123;</span><br><span class="line">        <span class="comment">// 监听端口 8080</span></span><br><span class="line">        <span class="type">ServerSocket</span> <span class="variable">serverSocket</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ServerSocket</span>(<span class="number">8080</span>);</span><br><span class="line">        System.out.println(<span class="string">&quot;Server started on port 8080...&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 无限循环等待并处理客户端请求</span></span><br><span class="line">        <span class="keyword">while</span> (<span class="literal">true</span>) &#123;</span><br><span class="line">            <span class="keyword">try</span> (<span class="type">Socket</span> <span class="variable">clientSocket</span> <span class="operator">=</span> serverSocket.accept()) &#123;</span><br><span class="line">                <span class="comment">// 处理客户端请求</span></span><br><span class="line">                handleRequest(clientSocket);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 处理客户端请求并返回简单响应。</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> clientSocket 客户端Socket，用于读取请求和发送响应。</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@throws</span> IOException 如果在读取请求或发送响应时发生I/O错误。</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">handleRequest</span><span class="params">(Socket clientSocket)</span> <span class="keyword">throws</span> IOException &#123;</span><br><span class="line">        <span class="comment">// 读取请求输入流</span></span><br><span class="line">        <span class="type">BufferedReader</span> <span class="variable">in</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">BufferedReader</span>(<span class="keyword">new</span> <span class="title class_">InputStreamReader</span>(clientSocket.getInputStream()));</span><br><span class="line">        <span class="comment">// 写入响应输出流</span></span><br><span class="line">        <span class="type">BufferedWriter</span> <span class="variable">out</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">BufferedWriter</span>(<span class="keyword">new</span> <span class="title class_">OutputStreamWriter</span>(clientSocket.getOutputStream()));</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 读取请求行</span></span><br><span class="line">        <span class="type">String</span> <span class="variable">requestLine</span> <span class="operator">=</span> in.readLine();</span><br><span class="line">        System.out.println(<span class="string">&quot;Received request: &quot;</span> + requestLine);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 构建简单响应</span></span><br><span class="line">        <span class="type">String</span> <span class="variable">response</span> <span class="operator">=</span> <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">                HTTP/1.1 200 OK\r</span></span><br><span class="line"><span class="string">                Content-Type: text/html\r</span></span><br><span class="line"><span class="string">                Content-Length: 20\r</span></span><br><span class="line"><span class="string">                \r</span></span><br><span class="line"><span class="string">                &lt;h1&gt;Hello World!&lt;/h1&gt;&quot;&quot;&quot;</span>;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 发送响应</span></span><br><span class="line">        out.write(response);</span><br><span class="line">        out.flush();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h4 id="代码解释-下一阶段"><a href="#代码解释-下一阶段" class="headerlink" title="代码解释 &amp; 下一阶段"></a>代码解释 &amp; 下一阶段</h4><p>那么在上面的代码中，我们实现了一个简易的JavaWeb服务器，它将监听8080接口，接收GET请求并返回一个固定的HTML界面。</p>
+<p>所以一个服务器做的事情是：</p>
+<ul>
+<li><strong>监听接口</strong></li>
+<li><strong>接收、解析请求</strong></li>
+<li><strong>创建响应</strong></li>
+<li><strong>返回响应</strong></li>
+</ul>
+<p>在实际的应用中，我们还需要做一些事情来让这个服务器真正可以使用起来。</p>
+<h3 id="服务器所应承担的更多功能"><a href="#服务器所应承担的更多功能" class="headerlink" title="服务器所应承担的更多功能"></a>服务器所应承担的更多功能</h3><h4 id="先看代码-1"><a href="#先看代码-1" class="headerlink" title="先看代码"></a>先看代码</h4><p>比如实际上我们的服务器一般接受的是RESTful HTTP 请求，那么我们就要考虑怎么去<strong>根据URL路径将请求映射到对应的Controller方法</strong>，比如像这样：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Router类用于管理和路由HTTP请求到相应的控制器</span></span><br><span class="line"><span class="comment"> * 它通过维护一个路径到控制器的映射来实现请求的路由</span></span><br><span class="line"><span class="comment"> * </span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> baiyina</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@since</span> 1.0</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@since</span> 2024/11/11 17:50</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Router</span> &#123;</span><br><span class="line">    <span class="comment">// 存储路径与控制器映射的路由表</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> Map&lt;String, Controller&gt; routes = <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;&gt;();</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 向路由表中添加一个路径到控制器的映射</span></span><br><span class="line"><span class="comment">     * </span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> path 路径，请求的URL路径</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> controller 控制器，处理请求的具体实现</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">addRoute</span><span class="params">(String path, Controller controller)</span> &#123;</span><br><span class="line">        routes.put(path, controller);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 根据请求路径处理请求并生成响应</span></span><br><span class="line"><span class="comment">     * 如果找到对应的控制器，则调用控制器处理请求，否则返回404未找到</span></span><br><span class="line"><span class="comment">     * </span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> request 请求对象，包含请求的所有信息</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> response 响应对象，用于发送响应给客户端</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@throws</span> IOException 如果在处理请求或生成响应时发生I/O错误</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">handle</span><span class="params">(Request request, Response response)</span> <span class="keyword">throws</span> IOException &#123;</span><br><span class="line">        <span class="comment">// 根据请求路径获取对应的控制器</span></span><br><span class="line">        <span class="type">Controller</span> <span class="variable">controller</span> <span class="operator">=</span> routes.get(request.getPath());</span><br><span class="line">        <span class="keyword">if</span> (controller != <span class="literal">null</span>) &#123;</span><br><span class="line">            <span class="comment">// 如果找到控制器，则调用控制器处理请求</span></span><br><span class="line">            controller.handle(request, response);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="comment">// 如果未找到控制器，则发送404未找到响应</span></span><br><span class="line">            response.sendNotFound();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>完整代码如下：</p>
+<h5 id="运行方式"><a href="#运行方式" class="headerlink" title="运行方式"></a><strong>运行方式</strong></h5><p>​	启动类为Main，启动后服务器将监听8080端口</p>
+<p>​	可以使用浏览器或curl进行测试</p>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">curl http://localhost:<span class="number">8080</span>/home</span><br><span class="line">curl -X POST http://localhost:<span class="number">8080</span>/about</span><br></pre></td></tr></table></figure>
+
+<p>​	</p>
+<h5 id="环境"><a href="#环境" class="headerlink" title="环境"></a>环境</h5><p>注意，此处环境仅为笔者常用环境，与本文涉及代码关联不紧密，使用其他版本亦可。</p>
+<ul>
+<li>Java17</li>
+<li>Maven 3.9.8</li>
+<li>Spring Boot 3.3.5</li>
+</ul>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"> <span class="tag">&lt;<span class="name">dependencies</span>&gt;</span></span><br><span class="line">     <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">     <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line">     <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>javax.servlet<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>javax.servlet-api<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">version</span>&gt;</span>4.0.1<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">scope</span>&gt;</span>compile<span class="tag">&lt;/<span class="name">scope</span>&gt;</span></span><br><span class="line">     <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependencies</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="https://raw.githubusercontent.com/baiyina/baiyina.github.image/main/img/202411131115085.png" alt="image-20241113111458939"></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 主类，用于启动HTTP服务器并配置路由</span></span><br><span class="line"><span class="comment"> * 本类负责初始化路由器，配置路由映射，并启动HTTP服务器</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> baiyina</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@since</span> 1.0</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@since</span> 2024/11/11 17:50</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Main</span> &#123;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 主函数，程序的入口点</span></span><br><span class="line"><span class="comment">     * 在此函数中，我们创建了路由器实例，配置了路由映射，并启动了HTTP服务器</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> args 命令行参数，本程序不使用此参数</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@throws</span> IOException 如果服务器启动过程中发生I/O错误</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> IOException &#123;</span><br><span class="line">        <span class="type">Router</span> <span class="variable">router</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Router</span>();</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 添加路由映射</span></span><br><span class="line">        router.addRoute(<span class="string">&quot;/home&quot;</span>, <span class="keyword">new</span> <span class="title class_">HomeController</span>());</span><br><span class="line">        router.addRoute(<span class="string">&quot;/about&quot;</span>, <span class="keyword">new</span> <span class="title class_">AboutController</span>());</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 启动服务器</span></span><br><span class="line">        <span class="type">HttpServer</span> <span class="variable">server</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">HttpServer</span>(router);</span><br><span class="line">        server.start(<span class="number">8080</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.baiyina.demo.springweblearndemo.notomcat;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.io.BufferedReader;</span><br><span class="line"><span class="keyword">import</span> java.io.IOException;</span><br><span class="line"><span class="keyword">import</span> java.io.InputStream;</span><br><span class="line"><span class="keyword">import</span> java.io.InputStreamReader;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 表示一个HTTP请求，主要负责从输入流中解析请求方法和路径。</span></span><br><span class="line"><span class="comment"> * </span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> baiyina</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@since</span> 1.0</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@since</span> 2024/11/11 17:48</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Request</span> &#123;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 存储HTTP请求方法，如GET、POST等</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> String method;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 存储请求的路径，如/index.html</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> String path;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 通过解析输入流中的请求信息来构造Request对象。</span></span><br><span class="line"><span class="comment">     * </span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> inputStream 包含HTTP请求信息的输入流。</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@throws</span> IOException 如果在读取输入流时发生I/O错误。</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">Request</span><span class="params">(InputStream inputStream)</span> <span class="keyword">throws</span> IOException &#123;</span><br><span class="line">        <span class="comment">// 使用BufferedReader按行读取输入流，便于处理</span></span><br><span class="line">        <span class="type">BufferedReader</span> <span class="variable">reader</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">BufferedReader</span>(<span class="keyword">new</span> <span class="title class_">InputStreamReader</span>(inputStream));</span><br><span class="line">        <span class="comment">// 读取请求的第一行，该行包含请求方法和路径</span></span><br><span class="line">        <span class="type">String</span> <span class="variable">line</span> <span class="operator">=</span> reader.readLine();</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 检查第一行是否为空，以防止解析错误</span></span><br><span class="line">        <span class="keyword">if</span> (line != <span class="literal">null</span> &amp;&amp; !line.isEmpty()) &#123;</span><br><span class="line">            <span class="comment">// 按空格分割第一行，获取请求方法和路径</span></span><br><span class="line">            String[] parts = line.split(<span class="string">&quot; &quot;</span>);</span><br><span class="line">            <span class="comment">// 将解析出的请求方法和路径赋值给对应的字段</span></span><br><span class="line">            <span class="built_in">this</span>.method = parts[<span class="number">0</span>];</span><br><span class="line">            <span class="built_in">this</span>.path = parts[<span class="number">1</span>];</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 获取HTTP请求方法。</span></span><br><span class="line"><span class="comment">     * </span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> 请求方法，如GET、POST等。</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">getMethod</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> method;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 获取请求的路径。</span></span><br><span class="line"><span class="comment">     * </span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> 请求的路径，如/index.html。</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">getPath</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> path;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.baiyina.demo.springweblearndemo.notomcat;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.io.IOException;</span><br><span class="line"><span class="keyword">import</span> java.io.OutputStream;</span><br><span class="line"><span class="keyword">import</span> java.io.PrintWriter;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Response类用于处理HTTP响应相关操作</span></span><br><span class="line"><span class="comment"> * 它提供了将内容写入输出流的方法，主要用于发送HTTP响应给客户端</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> baiyina</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@since</span> 1.0</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@since</span> 2024/11/11 17:48</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Response</span> &#123;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * outputStream用于将响应内容输出到客户端</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="comment">//</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> OutputStream outputStream;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 构造方法，初始化Response对象</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> outputStream 输出流，用于将响应内容输出到客户端</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">Response</span><span class="params">(OutputStream outputStream)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.outputStream = outputStream;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 发送HTTP响应的方法</span></span><br><span class="line"><span class="comment">     * 它会构建HTTP响应的头部和内容，并将其写入输出流</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> content 要发送的HTTP响应内容</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@throws</span> IOException 如果在写入输出流时发生I/O错误</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">send</span><span class="params">(String content)</span> <span class="keyword">throws</span> IOException &#123;</span><br><span class="line">        <span class="comment">// 使用PrintWriter包装outputStream，以便于发送响应</span></span><br><span class="line">        <span class="type">PrintWriter</span> <span class="variable">writer</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">PrintWriter</span>(outputStream, <span class="literal">true</span>);</span><br><span class="line">        <span class="comment">// 构建HTTP响应头部，包括状态码、内容类型和内容长度</span></span><br><span class="line">        writer.println(<span class="string">&quot;HTTP/1.1 200 OK&quot;</span>);</span><br><span class="line">        writer.println(<span class="string">&quot;Content-Type: text/plain&quot;</span>);</span><br><span class="line">        writer.println(<span class="string">&quot;Content-Length: &quot;</span> + content.length());</span><br><span class="line">        <span class="comment">// 空行表示HTTP响应头部结束</span></span><br><span class="line">        writer.println();</span><br><span class="line">        <span class="comment">// 发送实际的响应内容</span></span><br><span class="line">        writer.println(content);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 发送404 Not Found HTTP响应的方法</span></span><br><span class="line"><span class="comment">     * 它专门用于构建和发送404错误的HTTP响应</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@throws</span> IOException 如果在写入输出流时发生I/O错误</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">sendNotFound</span><span class="params">()</span> <span class="keyword">throws</span> IOException &#123;</span><br><span class="line">        <span class="comment">// 使用PrintWriter包装outputStream，以便于发送响应</span></span><br><span class="line">        <span class="type">PrintWriter</span> <span class="variable">writer</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">PrintWriter</span>(outputStream, <span class="literal">true</span>);</span><br><span class="line">        <span class="comment">// 构建HTTP 404错误响应的头部</span></span><br><span class="line">        writer.println(<span class="string">&quot;HTTP/1.1 404 Not Found&quot;</span>);</span><br><span class="line">        writer.println(<span class="string">&quot;Content-Type: text/plain&quot;</span>);</span><br><span class="line">        <span class="comment">// 空行表示HTTP响应头部结束</span></span><br><span class="line">        writer.println();</span><br><span class="line">        <span class="comment">// 发送404错误的响应内容</span></span><br><span class="line">        writer.println(<span class="string">&quot;404 Not Found&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.baiyina.demo.springweblearndemo.notomcat;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.io.IOException;</span><br><span class="line"><span class="keyword">import</span> java.net.ServerSocket;</span><br><span class="line"><span class="keyword">import</span> java.net.Socket;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 表示一个HTTP服务器，该服务器监听指定端口并使用路由器处理传入的HTTP请求。</span></span><br><span class="line"><span class="comment"> * 服务器无限期运行，接受客户端连接并使用路由器处理请求。</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> baiyina</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@since</span> 1.0</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@since</span> 2024/11/11 17:50</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">HttpServer</span> &#123;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 用于路由HTTP请求的核心组件。</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> Router router;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 使用指定的路由器构造HttpServer实例。</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> router 用于处理HTTP请求的路由器。</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">HttpServer</span><span class="params">(Router router)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.router = router;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 在指定端口启动HTTP服务器，监听并处理传入的HTTP请求。</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> port 服务器监听客户端请求的端口号。</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@throws</span> IOException 当创建或访问服务器套接字时发生I/O错误。</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">start</span><span class="params">(<span class="type">int</span> port)</span> <span class="keyword">throws</span> IOException &#123;</span><br><span class="line">        <span class="comment">// 创建服务器套接字并监听指定端口</span></span><br><span class="line">        <span class="keyword">try</span> (<span class="type">ServerSocket</span> <span class="variable">serverSocket</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ServerSocket</span>(port)) &#123;</span><br><span class="line">            System.out.println(<span class="string">&quot;Server is running on port &quot;</span> + port);</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 服务器主循环，持续监听客户端连接</span></span><br><span class="line">            <span class="keyword">while</span> (<span class="literal">true</span>) &#123;</span><br><span class="line">                <span class="comment">// 接受客户端连接</span></span><br><span class="line">                <span class="keyword">try</span> (<span class="type">Socket</span> <span class="variable">socket</span> <span class="operator">=</span> serverSocket.accept()) &#123;</span><br><span class="line">                    <span class="comment">// 解析客户端的请求</span></span><br><span class="line">                    <span class="type">Request</span> <span class="variable">request</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Request</span>(socket.getInputStream());</span><br><span class="line">                    <span class="comment">// 准备向客户端发送响应</span></span><br><span class="line">                    <span class="type">Response</span> <span class="variable">response</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Response</span>(socket.getOutputStream());</span><br><span class="line"></span><br><span class="line">                    <span class="comment">// 使用路由器处理请求并生成响应</span></span><br><span class="line">                    router.handle(request, response);</span><br><span class="line">                &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">                    <span class="comment">// 如果处理请求时发生异常，输出错误信息</span></span><br><span class="line">                    System.err.println(<span class="string">&quot;Error handling request: &quot;</span> + e.getMessage());</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.baiyina.demo.springweblearndemo.notomcat;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.io.IOException;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Controller 接口定义了处理请求和响应的标准方式。</span></span><br><span class="line"><span class="comment"> * 它设计用于处理请求对象并生成相应的响应对象，有助于应用程序架构中的关注点分离和代码组织。</span></span><br><span class="line"><span class="comment"> * </span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> baiyina</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@since</span> 1.0</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@since</span> 2024/11/11 17:49</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title class_">Controller</span> &#123;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 处理请求并生成响应。</span></span><br><span class="line"><span class="comment">     * 该方法是 Controller 接口的核心，允许实现类处理传入的请求，并根据请求内容生成相应的响应，实现从请求到响应的转换。</span></span><br><span class="line"><span class="comment">     * </span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> request  请求对象，封装了请求的所有信息。</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> response 响应对象，用于封装返回的响应信息。</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@throws</span> IOException 如果在请求处理过程中发生 I/O 错误。</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">void</span> <span class="title function_">handle</span><span class="params">(Request request, Response response)</span> <span class="keyword">throws</span> IOException;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.baiyina.demo.springweblearndemo.notomcat;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.io.IOException;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * HomeController类负责处理主页的HTTP请求，实现了Controller接口。</span></span><br><span class="line"><span class="comment"> * 它根据请求的方法类型（GET或POST），返回不同的响应消息。</span></span><br><span class="line"><span class="comment"> * </span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> baiyina</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@since</span> 1.0</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@since</span> 2024/11/11 17:49</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">HomeController</span> <span class="keyword">implements</span> <span class="title class_">Controller</span> &#123;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 处理HTTP请求的方法，根据请求方法类型返回不同的响应。</span></span><br><span class="line"><span class="comment">     * </span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> request  请求对象，包含HTTP请求的相关信息。</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> response 响应对象，用于向客户端发送响应。</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@throws</span> IOException 如果发送响应时发生I/O错误。</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">handle</span><span class="params">(Request request, Response response)</span> <span class="keyword">throws</span> IOException &#123;</span><br><span class="line">        <span class="comment">// 检查请求方法是否为GET</span></span><br><span class="line">        <span class="keyword">if</span> (<span class="string">&quot;GET&quot;</span>.equalsIgnoreCase(request.getMethod())) &#123;</span><br><span class="line">            response.send(<span class="string">&quot;Welcome to Home Page!&quot;</span>);</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (<span class="string">&quot;POST&quot;</span>.equalsIgnoreCase(request.getMethod())) &#123;</span><br><span class="line">            <span class="comment">// 请求方法为POST时的处理</span></span><br><span class="line">            response.send(<span class="string">&quot;POST request to Home Page.&quot;</span>);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="comment">// 请求方法既不是GET也不是POST时的处理</span></span><br><span class="line">            response.send(<span class="string">&quot;Method Not Supported&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.baiyina.demo.springweblearndemo.notomcat;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.io.IOException;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * AboutController 类负责处理与关于页面相关的 HTTP 请求。</span></span><br><span class="line"><span class="comment"> * 它实现了 Controller 接口，并为不同的 HTTP 方法提供了具体的处理逻辑。</span></span><br><span class="line"><span class="comment"> * </span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> baiyina</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@since</span> 1.0</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@since</span> 2024/11/11 17:49</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">AboutController</span> <span class="keyword">implements</span> <span class="title class_">Controller</span> &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">handle</span><span class="params">(Request request, Response response)</span> <span class="keyword">throws</span> IOException &#123;</span><br><span class="line">        <span class="comment">// 根据请求方法处理不同的 HTTP 请求</span></span><br><span class="line">        <span class="keyword">if</span> (<span class="string">&quot;GET&quot;</span>.equalsIgnoreCase(request.getMethod())) &#123;</span><br><span class="line">            response.send(<span class="string">&quot;Welcome to About Page!&quot;</span>);</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (<span class="string">&quot;POST&quot;</span>.equalsIgnoreCase(request.getMethod())) &#123;</span><br><span class="line">            response.send(<span class="string">&quot;POST request to About Page.&quot;</span>);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            response.send(<span class="string">&quot;Method Not Supported&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h4 id="代码解释-下一阶段-1"><a href="#代码解释-下一阶段-1" class="headerlink" title="代码解释 &amp; 下一阶段"></a>代码解释 &amp; 下一阶段</h4><p>根据我们在上一章所提到的，一个Web服务器所具备的功能是：</p>
+<ul>
+<li>接收来自客户端的HTTP请求</li>
+<li>解析请求，分析请求中的URL、头信息、参数等</li>
+<li>返回响应的HTTP响应，将数据（如HTML界面、JSON数据、图片等）发送回客户端。</li>
+</ul>
+<p>如上代码，我们实现了Web应用服务器所应具备的必要功能之一：解析URL。</p>
+<p>而对于Web服务器来说，类似解析URL并将请求映射给合适的处理器方法这种需求是必要的、复杂且重复的操作，那么为了简化这一过程，我们可以<strong>将这些通用的功能抽象出来，封装成可重用的组件。</strong></p>
+<p>恭喜你，你发明了servlet和servlet容器。</p>
+<h2 id="引入Tomcat"><a href="#引入Tomcat" class="headerlink" title="引入Tomcat"></a>引入Tomcat</h2><h3 id="使用Tomcat构建简单服务器"><a href="#使用Tomcat构建简单服务器" class="headerlink" title="使用Tomcat构建简单服务器"></a>使用Tomcat构建简单服务器</h3><p>上面我们提到了一个Web服务器应有的必要功能，然后使用基础的Socket开发了一个可以处理基础的HTTP请求的服务器。接下来我将展示如何使用Servlet + Tomcat实现相同的功能。</p>
+<h4 id="先看代码-2"><a href="#先看代码-2" class="headerlink" title="先看代码"></a>先看代码</h4><h5 id="运行方式-1"><a href="#运行方式-1" class="headerlink" title="运行方式"></a>运行方式</h5><p>此处涉及部署Tomcat过程</p>
+<ol>
+<li><p>官网下载：<a target="_blank" rel="noopener" href="https://tomcat.apache.org/download-90.cgi">https://tomcat.apache.org/download-90.cgi</a></p>
+<p><img src="D:\大二（23.7）\JavaSE浅学\图片\image-20241113114237726.png" alt="image-20241113114237726"></p>
+<p>根据环境选择即可，建议下载.zip，使用简单</p>
+</li>
+<li><p>打包你的项目，war包</p>
+<p>给出pom文件示例：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version=<span class="string">&quot;1.0&quot;</span> encoding=<span class="string">&quot;UTF-8&quot;</span>?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">project</span> <span class="attr">xmlns</span>=<span class="string">&quot;http://maven.apache.org/POM/4.0.0&quot;</span></span></span><br><span class="line"><span class="tag">         <span class="attr">xmlns:xsi</span>=<span class="string">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span></span></span><br><span class="line"><span class="tag">         <span class="attr">xsi:schemaLocation</span>=<span class="string">&quot;http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">modelVersion</span>&gt;</span>4.0.0<span class="tag">&lt;/<span class="name">modelVersion</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.example<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>maven-demo-web-tomcat<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>1.0-SNAPSHOT<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">properties</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">project.build.sourceEncoding</span>&gt;</span>UTF-8<span class="tag">&lt;/<span class="name">project.build.sourceEncoding</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">properties</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">packaging</span>&gt;</span>war<span class="tag">&lt;/<span class="name">packaging</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">dependencies</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!-- Servlet API --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>javax.servlet<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>javax.servlet-api<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">version</span>&gt;</span>4.0.1<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">scope</span>&gt;</span>provided<span class="tag">&lt;/<span class="name">scope</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">dependencies</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">build</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">plugins</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">plugin</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.apache.maven.plugins<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>maven-war-plugin<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">version</span>&gt;</span>3.3.2<span class="tag">&lt;/<span class="name">version</span>&gt;</span> <span class="comment">&lt;!-- 使用最新版本 --&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">plugin</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">plugins</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">build</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;/<span class="name">project</span>&gt;</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>将你的war包：xxx.war 文件复制到Tomcat的webapps文件夹下，Tomcat会自动检测到新的war文件并解压部署。</p>
+</li>
+<li><p>启动Tomcat，进入bin目录，运行startup.bat（Win）或startup.sh（Mac&#x2F;Linux）启动Tomcat。</p>
+</li>
+<li><p>Tomcat运行之后，会将你的应用部署在 </p>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://localhost:8080/xxx（你的项目名）</span><br></pre></td></tr></table></figure></li>
+</ol>
+<p>即访问：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl http://localhost:8080/xxx/home</span><br></pre></td></tr></table></figure>
+
+
+
+<h5 id="环境-1"><a href="#环境-1" class="headerlink" title="环境"></a>环境</h5><p>与上文相同，根据自己常用版本调整即可，无特殊要求</p>
+<p>Tomcat 9.0.97</p>
+<p><img src="https://raw.githubusercontent.com/baiyina/baiyina.github.image/main/img/202411131121593.png" alt="image-20241113112123286"></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.baiyina.demo.web.servlet;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> javax.servlet.ServletException;</span><br><span class="line"><span class="keyword">import</span> javax.servlet.annotation.WebServlet;</span><br><span class="line"><span class="keyword">import</span> javax.servlet.http.HttpServlet;</span><br><span class="line"><span class="keyword">import</span> javax.servlet.http.HttpServletRequest;</span><br><span class="line"><span class="keyword">import</span> javax.servlet.http.HttpServletResponse;</span><br><span class="line"><span class="keyword">import</span> java.io.IOException;</span><br><span class="line"><span class="keyword">import</span> java.io.PrintWriter;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * AboutServlet类扩展了HttpServlet，用于处理关于页面的HTTP请求。</span></span><br><span class="line"><span class="comment"> * 它主要处理两种类型的请求：GET和POST。</span></span><br><span class="line"><span class="comment"> * 该类被<span class="doctag">@WebServlet</span>(&quot;/about&quot;)注解标记，意味着它被映射到&quot;/about&quot;路径。</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> baiyina</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@since</span> 1.0</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@since</span> 2024/11/12 20:55</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@WebServlet(&quot;/about&quot;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">AboutServlet</span> <span class="keyword">extends</span> <span class="title class_">HttpServlet</span> &#123;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 处理GET请求。它通过设置响应内容类型为文本，并写入欢迎信息到响应中。</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> request 代表HTTP请求的对象，包含请求数据。</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> response 代表HTTP响应的对象，用于向客户端发送数据。</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@throws</span> ServletException 如果Servlet遇到异常。</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@throws</span> IOException 如果发生输入或输出异常。</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">protected</span> <span class="keyword">void</span> <span class="title function_">doGet</span><span class="params">(HttpServletRequest request, HttpServletResponse response)</span> <span class="keyword">throws</span> ServletException, IOException &#123;</span><br><span class="line">        response.setContentType(<span class="string">&quot;text/plain&quot;</span>);</span><br><span class="line">        <span class="type">PrintWriter</span> <span class="variable">out</span> <span class="operator">=</span> response.getWriter();</span><br><span class="line">        out.println(<span class="string">&quot;Welcome to About Page!&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 处理POST请求。与GET方法类似，但专门处理POST请求。</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> request 代表HTTP请求的对象，包含请求数据。</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> response 代表HTTP响应的对象，用于向客户端发送数据。</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@throws</span> ServletException 如果Servlet遇到异常。</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@throws</span> IOException 如果发生输入或输出异常。</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">protected</span> <span class="keyword">void</span> <span class="title function_">doPost</span><span class="params">(HttpServletRequest request, HttpServletResponse response)</span> <span class="keyword">throws</span> ServletException, IOException &#123;</span><br><span class="line">        response.setContentType(<span class="string">&quot;text/plain&quot;</span>);</span><br><span class="line">        <span class="type">PrintWriter</span> <span class="variable">out</span> <span class="operator">=</span> response.getWriter();</span><br><span class="line">        out.println(<span class="string">&quot;POST request to About Page.&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.baiyina.demo.web.servlet;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> javax.servlet.ServletException;</span><br><span class="line"><span class="keyword">import</span> javax.servlet.annotation.WebServlet;</span><br><span class="line"><span class="keyword">import</span> javax.servlet.http.HttpServlet;</span><br><span class="line"><span class="keyword">import</span> javax.servlet.http.HttpServletRequest;</span><br><span class="line"><span class="keyword">import</span> javax.servlet.http.HttpServletResponse;</span><br><span class="line"><span class="keyword">import</span> java.io.IOException;</span><br><span class="line"><span class="keyword">import</span> java.io.PrintWriter;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * HomeServlet类用于处理主页的HTTP请求</span></span><br><span class="line"><span class="comment"> * 它继承自HttpServlet，重写了doGet和doPost方法来处理GET和POST请求</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> baiyina</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@since</span> 1.0</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@since</span> 2024/11/12 21:00</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@WebServlet(&quot;/home&quot;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">HomeServlet</span> <span class="keyword">extends</span> <span class="title class_">HttpServlet</span> &#123;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 处理GET请求</span></span><br><span class="line"><span class="comment">     * 设置响应内容类型为纯文本，并在响应中写入欢迎信息</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> request 请求对象，包含来自客户端的请求信息</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> response 响应对象，用于向客户端发送响应</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@throws</span> ServletException 如果Servlet遇到异常</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@throws</span> IOException 如果发生输入或输出异常</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">protected</span> <span class="keyword">void</span> <span class="title function_">doGet</span><span class="params">(HttpServletRequest request, HttpServletResponse response)</span> <span class="keyword">throws</span> ServletException, IOException &#123;</span><br><span class="line">        response.setContentType(<span class="string">&quot;text/plain&quot;</span>);</span><br><span class="line">        <span class="type">PrintWriter</span> <span class="variable">out</span> <span class="operator">=</span> response.getWriter();</span><br><span class="line">        out.println(<span class="string">&quot;Welcome to Home Page!&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 处理POST请求</span></span><br><span class="line"><span class="comment">     * 设置响应内容类型为纯文本，并在响应中写入收到POST请求的信息</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> request 请求对象，包含来自客户端的请求信息</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> response 响应对象，用于向客户端发送响应</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@throws</span> ServletException 如果Servlet遇到异常</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@throws</span> IOException 如果发生输入或输出异常</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">protected</span> <span class="keyword">void</span> <span class="title function_">doPost</span><span class="params">(HttpServletRequest request, HttpServletResponse response)</span> <span class="keyword">throws</span>  ServletException, IOException &#123;</span><br><span class="line">        response.setContentType(<span class="string">&quot;text/plain&quot;</span>);</span><br><span class="line">        <span class="type">PrintWriter</span> <span class="variable">out</span> <span class="operator">=</span> response.getWriter();</span><br><span class="line">        out.println(<span class="string">&quot;POST request to Home Page.&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="代码解释-下一阶段-2"><a href="#代码解释-下一阶段-2" class="headerlink" title="代码解释 &amp; 下一阶段"></a>代码解释 &amp; 下一阶段</h4><p>如上所示，如果我们使用servlet  + servlet容器 Tomcat进行开发，我们只需要关注程序本身需要处理的逻辑，然后简单配置一下xml或直接使用注解来标识接口的路由，而不需要去关心它的映射映射过程和创建request，response对象的复杂过程，它将会自动解析HTTP请求，并注入 <code>HttpServletRequest</code> 和 <code>HttpServletResponse</code></p>
+<p>在这个程序中，<strong>servlet扮演了controller的角色</strong>，<strong>Servlet容器扮演了Router和HttpServer的角色</strong>，它将<strong>自动分发请求，处理路径映射</strong>，自动<strong>监听ServerSocket</strong>，<strong>处理Http请求的解析、传输和实现更多的功能。</strong></p>
+<p>实际上Servlet容器会带来更多的功能，比如：</p>
+<ul>
+<li><strong>线程管理</strong>：众所周知的是在并发处理请求的时候，Web服务器需要使用多线程的方式提高性能，Servlet容器将管理并发请求的线程，自动创建线程池并分配资源。</li>
+<li><strong>会话管理</strong>：容器内置Session管理，支持需要状态保持的应用</li>
+<li><strong>生命周期管理</strong>：Servlet生命周期将由Servlet容器接管（初始化、请求处理、销毁）</li>
+<li>还有更高的扩展性和强大的异常处理机制及基础的安全性支持。</li>
+</ul>
+<p>正因为Servlet开发的优越性，所以它是Java Web的一个重要组成部分，它使得我们开发一个Web应用是可以更专注于处理应用逻辑而不用处理底层的HTTP。</p>
+<p>哪怕它已经有了如此多的优势，但是由于偷懒将是人类技术进步永恒的第一驱动力（实际上是现代应用服务器更多的更复杂的需求，所以开发者也需要更简易、更优雅流畅的开发方式，再一次减少重复性的工作，能将更多的时间投入业务逻辑的处理）所以Spring Boot给大家带来了更优异的开发方式。</p>
+<h1 id="Spring-Boot-Spring-MVC构建的JavWeb应用处理HTTP请求示例"><a href="#Spring-Boot-Spring-MVC构建的JavWeb应用处理HTTP请求示例" class="headerlink" title="Spring Boot + Spring MVC构建的JavWeb应用处理HTTP请求示例"></a>Spring Boot + Spring MVC构建的JavWeb应用处理HTTP请求示例</h1><p>下面是一个典型的 HTTP 请求从客户端发出到到达 Spring Boot + Spring MVC 构建的 Java Web 应用，并返回响应的完整流程描述。</p>
+<h2 id="简述"><a href="#简述" class="headerlink" title="简述"></a>简述</h2><ol>
+<li><strong>客户端</strong>发起 HTTP 请求。</li>
+<li><strong>DNS 解析</strong>和<strong>TCP&#x2F;SSL 连接建立</strong>。</li>
+<li><strong>Tomcat</strong> 监听端口接收请求，将其分发给 <code>DispatcherServlet</code>。</li>
+<li><strong>DispatcherServlet</strong> 通过 URL 映射找到对应的 Controller 方法。</li>
+<li><strong>Controller</strong> 处理业务逻辑，返回视图和数据。</li>
+<li><strong>ViewResolver</strong> 解析视图，<strong>渲染视图</strong>生成响应内容。</li>
+<li><strong>HttpServletResponse</strong> 包含响应数据，<strong>Tomcat</strong> 将其发回客户端。</li>
+<li><strong>TCP 连接关闭</strong>或保持。</li>
+</ol>
+<h2 id="1-客户端发起请求"><a href="#1-客户端发起请求" class="headerlink" title="1. 客户端发起请求"></a>1. 客户端发起请求</h2><ul>
+<li><strong>客户端准备请求</strong>：客户端准备HTTP请求数据，包括请求行、请求头、请求体等</li>
+<li><strong>DNS解析</strong>：如果客户端使用域名访问服务器，首先会通过DNS解析获取服务器的IP地址。</li>
+<li><strong>建立TCP连接</strong>：客户端通过三次握手和服务器建立TCP连接。</li>
+</ul>
+<h2 id="2-HTTP请求传输到服务器"><a href="#2-HTTP请求传输到服务器" class="headerlink" title="2.HTTP请求传输到服务器"></a>2.HTTP请求传输到服务器</h2><ul>
+<li><strong>发送HTTP请求</strong>：客户端通过TCP连接传输请求数据给服务器</li>
+<li><strong>服务器接受请求</strong>：服务器的Web容器（Web服务器）如Tomcat监听特定端口（通常为80或443），接收来自客户端的请求数据。</li>
+</ul>
+<h2 id="3-请求处理-Tomcat"><a href="#3-请求处理-Tomcat" class="headerlink" title="3.请求处理-Tomcat"></a>3.请求处理-Tomcat</h2><ul>
+<li><strong>解析请求的数据</strong>：Tomcat接收到请求后，会解析请求头、请求体等数据，并封装成一个<code>HttpServletRequest</code>对象</li>
+<li><strong>分发请求</strong>：Tomcat通过Servlet配置（URL映射）将请求分发给特定的Servlet处理。在Spring MVC应用中，这个Servlet通常是<strong>DispatcherServlet，它是Spring MVC框架的核心控制器</strong>。</li>
+</ul>
+<h2 id="4-DispatcherServlet处理请求"><a href="#4-DispatcherServlet处理请求" class="headerlink" title="4.DispatcherServlet处理请求"></a>4.DispatcherServlet处理请求</h2><ul>
+<li><strong>初始化请求处理链</strong>：<code>DispatcherServlet</code>会调用一系列的处理器，包括拦截器（Interceptor）、处理器映射（Handler Mappings）来进行进一步处理。</li>
+<li><strong>找到合适的Controller</strong>：<code>DispatcherServlet</code>会根据URL和请求方式（如GET、POST）在应用中找到与之对应的Controller方法</li>
+</ul>
+<h2 id="5-Controller处理请求逻辑"><a href="#5-Controller处理请求逻辑" class="headerlink" title="5.Controller处理请求逻辑"></a>5.Controller处理请求逻辑</h2><ul>
+<li><strong>执行业务逻辑</strong>：Controller中的方法会执行应用的业务逻辑，通常会调用服务层（Service）和数据访问层（DAO）来处理实际的数据操作。</li>
+<li><strong>返回Model和View</strong>：Controller方法返回一个包含Model和视图名称View Name的对象。通常会以JSON、XML或HTML格式封装。</li>
+</ul>
+<h2 id="6-View解析和渲染"><a href="#6-View解析和渲染" class="headerlink" title="6.View解析和渲染"></a>6.View解析和渲染</h2><ul>
+<li><strong>视图解析器（ViewResolver）</strong>：<code>DispatcherServlet</code>调用ViewResoler，将Controller返回的视图名称解析为实际的视图。</li>
+<li><strong>渲染视图</strong>：视图解析后，<code>DispatcherServlet</code>会将数据模型填充到视图中，生成最终的HTML或JSON格式的响应体。</li>
+</ul>
+<h2 id="7-生成HTTP响应"><a href="#7-生成HTTP响应" class="headerlink" title="7.生成HTTP响应"></a>7.生成HTTP响应</h2><ul>
+<li><strong>创建HttpServletResponse</strong>：生成的相应内容会被封装在<code>HttpServletResponse</code>对象中，包括响应状态码、响应头部和响应体。</li>
+<li><strong>返回响应</strong>：<code>DispacherServlet</code>将<code>HttpServletResponse</code>对象返回给Tomcat，Tomcat将响应数据转发给客户端。</li>
+</ul>
+<h2 id="8-关闭TCP连接"><a href="#8-关闭TCP连接" class="headerlink" title="8.关闭TCP连接"></a>8.关闭TCP连接</h2><ul>
+<li><strong>发送响应数据</strong>：Tomcat将HTTP响应数据通过TCP连接发送给客户端</li>
+<li><strong>关闭或保持连接</strong>：响应发送完成后，根据HTTP配置决定怎么处理连接</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Java/" rel="tag"># Java</a>
+              <a href="/tags/Spring/" rel="tag"># Spring</a>
+              <a href="/tags/Spring-Web/" rel="tag"># Spring Web</a>
+              <a href="/tags/web/" rel="tag"># web</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+            </div>
+            <div class="post-nav-item">
+                <a href="/2024/11/13/Java/Spring/Spring%20Web%E7%BD%91%E7%BB%9C%E8%AF%B7%E6%B1%82%E6%89%A7%E8%A1%8C%E6%B5%81%E7%A8%8B/" rel="next" title="Spring Web网络请求执行流程">
+                  Spring Web网络请求执行流程 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2024</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">baiyina</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="Word count total">21k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="Reading time total">38 mins.</span>
+  </span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="Total Visitors">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="Total Views">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="Back to top">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/sidebar.js"></script><script src="/js/next-boot.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.1/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+</body>
+</html>

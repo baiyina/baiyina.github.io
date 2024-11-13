@@ -164,7 +164,7 @@
       </tags>
   </entry>
   <entry>
-    <title>简单理解Spring Web下的Java Web应用的处理Http请求流程</title>
+    <title>Spring Web网络请求处理原理(重要组件分析)</title>
     <url>/2024/11/10/Java/Spring/Spring%20Web%E7%BD%91%E7%BB%9C%E8%AF%B7%E6%B1%82%E5%A4%84%E7%90%86%E5%8E%9F%E7%90%86/</url>
     <content><![CDATA[<p>在学习 Java Web 开发时，我们很可能忽略了如何使用原生 Java Servlet 和 JSP 构建 Java Web 应用并将其部署到如 Tomcat 等应用服务器中。得益于 Spring Boot 与 Spring MVC 的简化操作，创建一个 Java Web 应用变得异常简单。然而，如果不了解程序的底层运行机制，可能会影响我们对整个系统的全面理解，甚至限制进一步的深度开发。</p>
 <p>因此，我梳理了一个由 Spring Boot 和 Spring MVC 构建的 Java Web 应用处理 HTTP 请求的完整流程，并总结了所涉及的各个组件及其作用。</p>

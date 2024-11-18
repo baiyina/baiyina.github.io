@@ -19,30 +19,32 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Mist","darkmode":false,"version":"8.21.1","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"},"path":"/search.xml","localsearch":{"enable":true,"top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
 
-    <meta name="description" content="常用进制类型 二进制（Binary）：以0b或0B开头，只包含0或1 八进制（Octal）：以0开头 十进制（Decimal）：日常使用 十六进制（Hexadecimal）：以0x或0X开头，包含0-9和A-F">
+    <meta name="description" content="CPU也是有缓存的，而且还是多级缓存，那么它肯定也会出现缓存一致性问题，本文将讨论CPU缓存一致性的解决方案，这有助于我们拓展学习">
 <meta property="og:type" content="article">
-<meta property="og:title" content="进制转换及表示">
-<meta property="og:url" content="http://example.com/2024/11/17/Computer%20Organization/%E8%AE%A1%E7%AE%97%E6%9C%BA%E8%BF%9B%E5%88%B6%E8%BD%AC%E6%8D%A2%E5%8F%8A%E8%A1%A8%E7%A4%BA/index.html">
+<meta property="og:title" content="CPU缓存一致性简述">
+<meta property="og:url" content="http://example.com/2024/11/18/OS/CPU%E7%BC%93%E5%AD%98%E4%B8%80%E8%87%B4%E6%80%A7%E7%AE%80%E8%BF%B0/index.html">
 <meta property="og:site_name" content="baiyin’s blog">
-<meta property="og:description" content="常用进制类型 二进制（Binary）：以0b或0B开头，只包含0或1 八进制（Octal）：以0开头 十进制（Decimal）：日常使用 十六进制（Hexadecimal）：以0x或0X开头，包含0-9和A-F">
+<meta property="og:description" content="CPU也是有缓存的，而且还是多级缓存，那么它肯定也会出现缓存一致性问题，本文将讨论CPU缓存一致性的解决方案，这有助于我们拓展学习">
 <meta property="og:locale" content="en_US">
-<meta property="og:image" content="https://raw.githubusercontent.com/baiyina/baiyina.github.image/main/img/202411172235299.png">
-<meta property="og:image" content="https://raw.githubusercontent.com/baiyina/baiyina.github.image/main/img/202411172236903.png">
-<meta property="article:published_time" content="2024-11-17T13:47:00.000Z">
-<meta property="article:modified_time" content="2024-11-17T14:38:15.977Z">
+<meta property="og:image" content="https://raw.githubusercontent.com/baiyina/baiyina.github.image/main/img/202411181503802.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/baiyina/baiyina.github.image/main/img/202411181514547.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/baiyina/baiyina.github.image/main/img/202411182010662.jpg">
+<meta property="article:published_time" content="2024-11-18T12:12:00.000Z">
+<meta property="article:modified_time" content="2024-11-18T12:15:47.505Z">
 <meta property="article:author" content="baiyina">
-<meta property="article:tag" content="Computer Organization">
+<meta property="article:tag" content="OS">
+<meta property="article:tag" content="Cache">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://raw.githubusercontent.com/baiyina/baiyina.github.image/main/img/202411172235299.png">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/baiyina/baiyina.github.image/main/img/202411181503802.png">
 
 
-<link rel="canonical" href="http://example.com/2024/11/17/Computer%20Organization/%E8%AE%A1%E7%AE%97%E6%9C%BA%E8%BF%9B%E5%88%B6%E8%BD%AC%E6%8D%A2%E5%8F%8A%E8%A1%A8%E7%A4%BA/">
+<link rel="canonical" href="http://example.com/2024/11/18/OS/CPU%E7%BC%93%E5%AD%98%E4%B8%80%E8%87%B4%E6%80%A7%E7%AE%80%E8%BF%B0/">
 
 
-<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"en","comments":true,"permalink":"http://example.com/2024/11/17/Computer%20Organization/%E8%AE%A1%E7%AE%97%E6%9C%BA%E8%BF%9B%E5%88%B6%E8%BD%AC%E6%8D%A2%E5%8F%8A%E8%A1%A8%E7%A4%BA/","path":"2024/11/17/Computer Organization/计算机进制转换及表示/","title":"进制转换及表示"}</script>
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"en","comments":true,"permalink":"http://example.com/2024/11/18/OS/CPU%E7%BC%93%E5%AD%98%E4%B8%80%E8%87%B4%E6%80%A7%E7%AE%80%E8%BF%B0/","path":"2024/11/18/OS/CPU缓存一致性简述/","title":"CPU缓存一致性简述"}</script>
 
 <script class="next-config" data-name="calendar" type="application/json">""</script>
-<title>进制转换及表示 | baiyin’s blog</title>
+<title>CPU缓存一致性简述 | baiyin’s blog</title>
   
 
 
@@ -142,7 +144,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B8%B8%E7%94%A8%E8%BF%9B%E5%88%B6%E7%B1%BB%E5%9E%8B"><span class="nav-number">1.</span> <span class="nav-text">常用进制类型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BF%9B%E5%88%B6%E8%BD%AC%E6%8D%A2"><span class="nav-number">2.</span> <span class="nav-text">进制转换</span></a></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#CPU%E7%BC%93%E5%AD%98%E5%88%86%E7%BA%A7"><span class="nav-number">1.</span> <span class="nav-text">CPU缓存分级</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#CPU-Cache%E7%BB%93%E6%9E%84"><span class="nav-number">2.</span> <span class="nav-text">CPU Cache结构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#CPU-Cache%E5%86%99%E5%85%A5%E6%96%B9%E5%BC%8F"><span class="nav-number">3.</span> <span class="nav-text">CPU Cache写入方式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%86%99%E7%9B%B4%E8%BE%BE"><span class="nav-number">3.1.</span> <span class="nav-text">写直达</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%86%99%E5%9B%9E"><span class="nav-number">3.2.</span> <span class="nav-text">写回</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#CPU-%E7%BC%93%E5%AD%98%E4%B8%80%E8%87%B4%E6%80%A7%E9%97%AE%E9%A2%98"><span class="nav-number">4.</span> <span class="nav-text">CPU 缓存一致性问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BA%BF%E5%97%85%E6%8E%A2-%EF%BC%88%E5%86%99%E4%BC%A0%E6%92%AD%EF%BC%89"><span class="nav-number">5.</span> <span class="nav-text">总线嗅探 （写传播）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#MESI%E5%8D%8F%E8%AE%AE-%E4%B8%80%E8%87%B4%E6%80%A7%E5%8D%8F%E8%AE%AE-%E4%BA%8B%E5%8A%A1%E4%B8%B2%E8%A1%8C%E5%8C%96"><span class="nav-number">6.</span> <span class="nav-text">MESI协议 一致性协议 事务串行化</span></a></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -202,7 +204,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2024/11/17/Computer%20Organization/%E8%AE%A1%E7%AE%97%E6%9C%BA%E8%BF%9B%E5%88%B6%E8%BD%AC%E6%8D%A2%E5%8F%8A%E8%A1%A8%E7%A4%BA/">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2024/11/18/OS/CPU%E7%BC%93%E5%AD%98%E4%B8%80%E8%87%B4%E6%80%A7%E7%AE%80%E8%BF%B0/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.jpg">
@@ -215,12 +217,12 @@
     </span>
 
     <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="进制转换及表示 | baiyin’s blog">
+      <meta itemprop="name" content="CPU缓存一致性简述 | baiyin’s blog">
       <meta itemprop="description" content="">
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          进制转换及表示
+          CPU缓存一致性简述
         </h1>
 
         <div class="post-meta-container">
@@ -232,7 +234,7 @@
       <span class="post-meta-item-text">Posted on</span>
       
 
-      <time title="Created: 2024-11-17 21:47:00 / Modified: 22:38:15" itemprop="dateCreated datePublished" datetime="2024-11-17T21:47:00+08:00">2024-11-17</time>
+      <time title="Created: 2024-11-18 20:12:00 / Modified: 20:15:47" itemprop="dateCreated datePublished" datetime="2024-11-18T20:12:00+08:00">2024-11-18</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -240,7 +242,7 @@
       </span>
       <span class="post-meta-item-text">In</span>
         <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/Computer/" itemprop="url" rel="index"><span itemprop="name">Computer</span></a>
+          <a href="/categories/OS/" itemprop="url" rel="index"><span itemprop="name">OS</span></a>
         </span>
     </span>
 
@@ -258,14 +260,14 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">Word count in article: </span>
-      <span>398</span>
+      <span>1.4k</span>
     </span>
     <span class="post-meta-item" title="Reading time">
       <span class="post-meta-item-icon">
         <i class="far fa-clock"></i>
       </span>
       <span class="post-meta-item-text">Reading time &asymp;</span>
-      <span>1 mins.</span>
+      <span>3 mins.</span>
     </span>
 </div>
 
@@ -275,46 +277,53 @@
     
     
     
-    <div class="post-body" itemprop="articleBody"><h2 id="常用进制类型"><a href="#常用进制类型" class="headerlink" title="常用进制类型"></a>常用进制类型</h2><ul>
-<li>二进制（Binary）：以0b或0B开头，只包含0或1</li>
-<li>八进制（Octal）：以0开头</li>
-<li>十进制（Decimal）：日常使用</li>
-<li>十六进制（Hexadecimal）：以0x或0X开头，包含0-9和A-F</li>
-</ul>
+    <div class="post-body" itemprop="articleBody"><p>CPU也是有缓存的，而且还是多级缓存，那么它肯定也会出现缓存一致性问题，本文将讨论CPU缓存一致性的解决方案，这有助于我们拓展学习</p>
 <span id="more"></span>
-<h2 id="进制转换"><a href="#进制转换" class="headerlink" title="进制转换"></a>进制转换</h2><ul>
-<li><p><strong>其他进制转十进制</strong></p>
-<p><strong>按权展开法</strong></p>
-<p>即使用当前进制权值乘以每一位数值得到当前位贡献值，然后将所有贡献值相加得到最终结果。</p>
+
+<h2 id="CPU缓存分级"><a href="#CPU缓存分级" class="headerlink" title="CPU缓存分级"></a>CPU缓存分级</h2><p>CPU Cache通常分为三级，L1 Cache，L2 Cache， L3 Cache，L1离CPU核心最近，访问速度最快，存储容量最小，向外依次增加。</p>
+<p>在多核心的CPU中，L1，L2每个核心都有，L3为共享缓存</p>
+<p><img src="https://raw.githubusercontent.com/baiyina/baiyina.github.image/main/img/202411181503802.png" alt="image-20241118150335020"></p>
+<h2 id="CPU-Cache结构"><a href="#CPU-Cache结构" class="headerlink" title="CPU Cache结构"></a>CPU Cache结构</h2><p>CPU Cache由多个Cache Line组成，Cache Line时CPU从内存中读取数据的基本单位，由各种Tag + Data Block组成。</p>
+<p><img src="https://raw.githubusercontent.com/baiyina/baiyina.github.image/main/img/202411181514547.png" alt="image-20241118151417555"></p>
+<h2 id="CPU-Cache写入方式"><a href="#CPU-Cache写入方式" class="headerlink" title="CPU Cache写入方式"></a>CPU Cache写入方式</h2><h3 id="写直达"><a href="#写直达" class="headerlink" title="写直达"></a>写直达</h3><p>保持缓存一致性最简单的方式就是一次写入，将数据同时写入内存和Cache中，这种方式称为写直达（Write Through）。</p>
+<p>在这种写入模式下，<strong>对数据进行写操作之前会判断数据是否在CPU Cache中，如果在，先更新，再写入，不在的话，直接更新到内存中。</strong></p>
+<p>写直达<strong>实现简单</strong>，逻辑清晰，但是<strong>每次操作都会写内存</strong>，这<strong>没有充分发挥CPU Cache的高性能</strong>。</p>
+<h3 id="写回"><a href="#写回" class="headerlink" title="写回"></a>写回</h3><p>为了降低访问内存的频率，出现了写回（Write Back）方法。</p>
+<p>写回模式下，当<strong>发生写操作的时候，新的数据将会被写入Cache Line中，然后标记为脏数据，在该Cache Line被替换或系统要求（内存不足）的时候写回内存。</strong></p>
+<p>写回模式<strong>实现复杂</strong>，<strong>一致性较差</strong>，需要<strong>额外的标记位</strong>，但是<strong>性能高</strong></p>
+<h2 id="CPU-缓存一致性问题"><a href="#CPU-缓存一致性问题" class="headerlink" title="CPU 缓存一致性问题"></a>CPU 缓存一致性问题</h2><p>在多核模式下，如果有一个共享变量被多个核心同时操作，就会出现一致性问题。</p>
+<p>如A，B同时操作变量 i &#x3D; 0，A将变量增 1 ， B也对变量增 1，这会出现两种问题</p>
 <ul>
-<li><strong>确定权值</strong>：从最高位到最低位，权值依次为 b <sup> n </sup>, b <sup> n - 1 </sup>, …, b <sup> 0 </sup></li>
-<li><strong>计算每一位贡献</strong>：将每一位的数值乘以对应的权值</li>
-<li><strong>求和</strong>：将所有位的共享相加，得到最终结果</li>
+<li>A先更改，未写入缓存之前，B在初始值基础上增一，这会导致B的修改是错误的，A的修改被抹去。所以需要在写操作的时候进行消息传播，通知所有共享次变量的核心</li>
+<li>多核同时操作的时候，比如还有C、D核心共享此变量，A、B的修改需要通知它们，而这个通知一定要保证操作顺序一致，也就是先A后B，不能出现先B后A的状况</li>
 </ul>
-<p>例：</p>
+<p>所以要实现CPU缓存一致性，需要确保的就是两件事：</p>
 <ul>
-<li><p>将二进制数 1011 转换为十进制 </p>
-<p>1 x 2<sup>0</sup> + 1 x 2<sup>1 </sup> + 1 x 2<sup>3</sup></p>
-<p>即 1 + 2 + 8 &#x3D; 11</p>
-</li>
-<li><p>将十六进制 0x1A3 转换为十进制</p>
-<p>3 x 16<sup>0</sup> + 10 x 16<sup>1</sup> + 1 x 16<sup>2</sup></p>
-<p>即 3 + 160 + 256 &#x3D; 419</p>
-</li>
+<li>某个核心中的共享数据更新的时候，需要传播给其他核心，称为<strong>写传播</strong>（Write Propagation）</li>
+<li>多个核心对数据的操作顺序，必须在其他核心看起来顺序是一样的，称为<strong>事务的串行化</strong>（Transaction Serialization）</li>
 </ul>
-</li>
-<li><p><strong>十进制转换其他进制</strong></p>
-<p><strong>除基取余法</strong></p>
-<p>即不断除以目标进制（基数），记录余数，并通过余数反向排列得到转换结果</p>
-<p>例：</p>
+<h2 id="总线嗅探-（写传播）"><a href="#总线嗅探-（写传播）" class="headerlink" title="总线嗅探 （写传播）"></a>总线嗅探 （写传播）</h2><p>写传播要达到的目的就是当某个核心更新Cache中的数据后，要把该事件广播通知到其他核心，最常见的方式就是<strong>总线嗅探</strong></p>
+<p>总线嗅探的概念就是，所有<strong>CPU核心共享同一系统总线，通过缓存控制器监听总线活动，检测与本地缓存数据相关的操作，然后根据一致性协议采取相应行动</strong></p>
+<p>功能就是检测其他处理器的写操作并根据监听信息更新或失效本地缓存数据以保证缓存一致性。</p>
+<h2 id="MESI协议-一致性协议-事务串行化"><a href="#MESI协议-一致性协议-事务串行化" class="headerlink" title="MESI协议 一致性协议 事务串行化"></a>MESI协议 一致性协议 事务串行化</h2><p>MESI就是在总线嗅探下实现数据一致性的协议，它规定了数据的四种状态：</p>
 <ul>
-<li><p>156转换十进制</p>
-<img src="https://raw.githubusercontent.com/baiyina/baiyina.github.image/main/img/202411172235299.png" alt="image-20241117223531187" style="zoom:25%;" />
+<li><p>Modified 已修改</p>
+<p>即脏标记，表示该数据被更新过</p>
 </li>
-<li><p>7562转换十六进制</p>
-<img src="https://raw.githubusercontent.com/baiyina/baiyina.github.image/main/img/202411172236903.png" alt="image-20241117223557173" style="zoom: 33%;" /></li>
+<li><p>Exclusive 独占</p>
+<p>即只有当前核心存储使用该数据，可以自由写入</p>
+</li>
+<li><p>Shared 共享</p>
+<p>有多个核心共享相同数据，要更新的时候需要广播请求，将其它所有核心中对应的缓存无效</p>
+</li>
+<li><p>Invalid 无效</p>
+<p>无效状态标识该数据失效，不可读取</p>
+</li>
 </ul>
-</li>
+<p><img src="https://raw.githubusercontent.com/baiyina/baiyina.github.image/main/img/202411182010662.jpg" alt="下载"></p>
+<p>本文中图片参考</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://xiaolincoding.com/os/1_hardware/cpu_mesi.html#cpu-cache-%E7%9A%84%E6%95%B0%E6%8D%AE%E5%86%99%E5%85%A5">https://xiaolincoding.com/os/1_hardware/cpu_mesi.html#cpu-cache-%E7%9A%84%E6%95%B0%E6%8D%AE%E5%86%99%E5%85%A5</a></li>
 </ul>
 
     </div>
@@ -325,21 +334,19 @@
 
     <footer class="post-footer">
           <div class="post-tags">
-              <a href="/tags/Computer-Organization/" rel="tag"># Computer Organization</a>
+              <a href="/tags/OS/" rel="tag"># OS</a>
+              <a href="/tags/Cache/" rel="tag"># Cache</a>
           </div>
 
         
 
           <div class="post-nav">
             <div class="post-nav-item">
-                <a href="/2024/11/13/Java/Spring/Spring%20Web%E7%BD%91%E7%BB%9C%E8%AF%B7%E6%B1%82%E6%89%A7%E8%A1%8C%E6%B5%81%E7%A8%8B/" rel="prev" title="Spring Web网络请求执行流程">
-                  <i class="fa fa-angle-left"></i> Spring Web网络请求执行流程
+                <a href="/2024/11/18/OS/%E7%AE%80%E5%8D%95%E8%AE%A8%E8%AE%BACPU%E7%9A%84%E7%BB%84%E6%88%90%E5%92%8C%E5%85%B6%E5%B7%A5%E4%BD%9C%E7%9A%84%E6%B5%81%E7%A8%8B/" rel="prev" title="简单讨论CPU的组成和其工作的流程">
+                  <i class="fa fa-angle-left"></i> 简单讨论CPU的组成和其工作的流程
                 </a>
             </div>
             <div class="post-nav-item">
-                <a href="/2024/11/18/OS/%E7%AE%80%E5%8D%95%E8%AE%A8%E8%AE%BACPU%E7%9A%84%E7%BB%84%E6%88%90%E5%92%8C%E5%85%B6%E5%B7%A5%E4%BD%9C%E7%9A%84%E6%B5%81%E7%A8%8B/" rel="next" title="简单讨论CPU的组成和其工作的流程">
-                  简单讨论CPU的组成和其工作的流程 <i class="fa fa-angle-right"></i>
-                </a>
             </div>
           </div>
     </footer>

@@ -3,7 +3,7 @@ author: "BAIYINA"
 title: "如何使用hugo + Github Pages构建个人博客"
 date: '2025-11-20T23:19:03+08:00'
 description: " "
-tags: ["java", "go", "code"]
+tags: ["hugo", "github pages", "个人博客"]
 ShowToc: true
 TocOpen: true
 weight: 2

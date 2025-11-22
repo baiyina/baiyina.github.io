@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Github Pages on BAIYINA</title>
+    <link>https://baiyina.github.io.com/tags/github-pages/</link>
+    <description>Recent content in Github Pages on BAIYINA</description>
+    <generator>Hugo -- 0.152.2</generator>
+    <language>en</language>
+    <lastBuildDate>Thu, 20 Nov 2025 23:19:03 +0800</lastBuildDate>
+    <atom:link href="https://baiyina.github.io.com/tags/github-pages/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>如何使用hugo &#43; Github Pages构建个人博客</title>
+      <link>https://baiyina.github.io.com/posts/%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8hugo-&#43;-github-pages%E6%9E%84%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2/</link>
+      <pubDate>Thu, 20 Nov 2025 23:19:03 +0800</pubDate>
+      <guid>https://baiyina.github.io.com/posts/%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8hugo-&#43;-github-pages%E6%9E%84%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2/</guid>
+      <description> </description>
+    </item>
+  </channel>
+</rss>
